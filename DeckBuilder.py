@@ -26,17 +26,5 @@ class Deck:
     def deal_card(self):
         return self.deck.pop()
 
-poker_deck = Deck()
-random_card = None
-for i in poker_deck.deck:
-    print("rank: " + str(i.rank) + " // suit: " + i.suit)
-
-print('\n' + '\n' + "Picking up cards:")
-
-for i in range(5):
-    random_card = poker_deck.deal_card()
-    print("rank: " + str(random_card.rank) + " // suit: " + random_card.suit)
-
-print(len(poker_deck.deck))
 
     
