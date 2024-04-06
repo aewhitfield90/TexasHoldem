@@ -1,12 +1,18 @@
-import random
+import random, pygame
 
-suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
-ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+
+suits = ['H', 'D', 'C', 'S']
+ranks = [2, 3, 4, 5, 6, 7, 8, 9, "T", "J", "Q", "K", "A"] 
 
 class Card:
     def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank
+        self.start_position = (0, 1000)
+        self.id = f"{self.rank}{self.suit}"
+        self.img = f"DeckOfCards/{self.id}.png"
+        self.card_img = pygame.image.load(self.img)
+
 
 class Deck:
     def __init__(self): #creates a new deck and shuffles it

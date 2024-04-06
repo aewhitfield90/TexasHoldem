@@ -1,17 +1,18 @@
 from DeckBuilder import Card, Deck
 
 class Player:
-    def __init__(self, name = "N/A"):
+    def __init__(self, name = "N/A", starting_chips = 0):
         self.name = name
-        self.chips = 0
+        self.chips = starting_chips
         self.bet = 0
         self.bet_gap = 0
         self.hand = []
         self.fold = False
         self.check = False
         self.all_in = False
-        self.hand_attributes = []
+        self.hand_rank = 0
         self.win = False
+        self.button = False #person located after the blinds and the one who starts the rounds
 
     def fold(self):
         self.fold = True
