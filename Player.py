@@ -1,7 +1,7 @@
 from DeckBuilder import Card, Deck
 
 class Player:
-    def __init__(self, name = "N/A", starting_chips = 0):
+    def __init__(self, name = "N/A", starting_chips = 0,):
         self.name = name
         self.chips = starting_chips
         self.bet = 0
@@ -45,6 +45,6 @@ class Player:
         self.fold = False
         self.check = False
         self.all_in = False
-        for i in range(len(self.hand_attributes)):
+        for _ in range(len(self.hand_attributes)):
             self.hand_attributes.pop()
         self.win = False

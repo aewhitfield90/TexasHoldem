@@ -11,8 +11,8 @@ class Dealer:
         self.small_blind = 1
         self.small_blind_player = 0
         self.player_list = players
-        self.player_count = len(players)
-        self.num_active_players = len(players)
+        self.player_count = len(self.player_list)
+        self.num_active_players = len(self.player_list)
         self.current_player_index = 0
         self.can_deal = True
         self.players_check = False
@@ -22,7 +22,7 @@ class Dealer:
     # adds new player to the table
     def add_player(self, player):
         if self.player_count < MAX_PLAYERS:
-            self.players.append(player)
+            self.player_list.append(player)
         else:
             print("Cannot Add Player")
     
@@ -42,22 +42,29 @@ class Dealer:
 
     #deals player cards
     def deal_player_cards(self):
-        for player in self.players:
-            player.hand.append(self.deck.deal_card())
+        for player in self.player_list:
+            new_card = self.deck.deal_card()
+            new_card.position = CARDS[self.dealt_cards]
+            player.hand.append(new_card)
             self.dealt_cards += 1
 
     #deals flop
     def deal_flop(self):
-        for _ in range(3):
-            self.river.append(self.deck.deal_card())
+        for i in range(3):
+            new_card = self.deck.deal_card()
+            new_card.position = (RIVER_X[i], RIVER_Y)
+            self.river.append(new_card)
             self.dealt_cards += 1
         self.flop = True
 
     def deal_after_flop(self):
         if self.dealt_cards <= (self.player_count * 2) + 5:
-            self.river.append(self.deck.deal_card())
+            new_card = self.deck.deal_card()
+            new_card.position = (RIVER_X[self.dealt_cards - self.player_count * 2], RIVER_Y)
+            self.river.append(new_card)
             self.dealt_cards += 1
             if self.dealt_cards == (self.player_count * 2) + 5:
+                print(self.dealt_cards)
                 self.can_deal = False
 
     def evaluate_hands():

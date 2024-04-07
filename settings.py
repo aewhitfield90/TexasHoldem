@@ -1,6 +1,5 @@
 #settings files for the game and game UI
 TITLE_STRING  = "POKER GAME"
-STARTING_CHIPS = 1000
 MAX_PLAYERS = 5
 BACKGROUND_COLOR = (33, 124, 66)
 FPS = 60
@@ -9,21 +8,19 @@ HEIGHT = 900
 GAME_FONT = "arialblack"
 TEXT_COLOR = (255, 255, 255)
 GAME_AUDIO = ''
+NAME_LIST = ["Andrew", "Felipe", "Jonathan", "Jose", "Parker"]
 
-P1_C1 = (20, (HEIGHT/6))
-P1_C2 = (80, (HEIGHT/6))
+# coordinates for cards and player names
+#CARDS_X = [760,790,310,340,1200,1230,100,130,1400,1430]
+#CARDS_Y = [750,750,280,280,1370,1370,80,80,1350,1350]
+CARDS = [(710,650), (835,650), (260,470), (385,470), (1140,470), 
+         (1265,470), (70,150), (195,150), (1340,150), (1465,150)]
+PLAYER_X = [780,330,1220,130,1420]
+PLAYER_Y = [800,620,620,300,300]
+RIVER_X = [500,625,750,875,1000]
+RIVER_Y = 280
 
-P2_C1 = (220, (HEIGHT/6))
-P2_C2 = (220, (HEIGHT/6))
 
-P3_C1 = (220, (HEIGHT/6))
-P3_C2 = (220, (HEIGHT/6))
-
-P4_C1 = (220, (HEIGHT/6))
-P4_C2 = (220, (HEIGHT/6))
-
-P5_C1 = (220, (HEIGHT/6))
-P5_C2 = (220, (HEIGHT/6))
 
 value_dict = {
     '2': 2,
