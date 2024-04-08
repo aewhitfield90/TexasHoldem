@@ -30,4 +30,8 @@ class Button():
 
         return action
 
+def draw_text(screen, text, size, text_col, x, y):
+        font = pygame.font.SysFont(GAME_FONT, size)
+        img = font.render(text, True, text_col)
+        screen.blit(img, (x, y))
     

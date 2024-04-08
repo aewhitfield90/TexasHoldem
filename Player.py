@@ -10,8 +10,7 @@ class Player:
         self.fold = False
         self.check = False
         self.all_in = False
-        self.hand_rank = 0
-        self.win = False
+        self.hand_rank = 9999
         self.button = False #person located after the blinds and the one who starts the rounds
 
     def fold(self):

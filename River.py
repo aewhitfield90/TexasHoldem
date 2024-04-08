@@ -1,3 +1,5 @@
+import itertools, phevaluator
+from phevaluator.evaluator import evaluate_cards
 from DeckBuilder import Deck
 from Player import Player
 from settings import *
@@ -17,7 +19,7 @@ class Dealer:
         self.can_deal = True
         self.players_check = False
         self.dealt_cards = 0
-        self.winner = None
+        self.winners = []
 
     # adds new player to the table
     def add_player(self, player):
@@ -44,7 +46,10 @@ class Dealer:
     def deal_player_cards(self):
         for player in self.player_list:
             new_card = self.deck.deal_card()
-            new_card.position = CARDS[self.dealt_cards]
+            if self.dealt_cards < self.player_count:
+                new_card.position = CARDS_1[self.dealt_cards]
+            else:
+                new_card.position = CARDS_2[self.dealt_cards - self.player_count]
             player.hand.append(new_card)
             self.dealt_cards += 1
 
@@ -56,6 +61,8 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
         self.flop = True
+        for player in self.player_list:
+            print(player.name + " " + f"{player.hand[0].rank}{player.hand[0].suit}" + " " + f"{player.hand[1].rank}{player.hand[1].suit}")
 
     def deal_after_flop(self):
         if self.dealt_cards <= (self.player_count * 2) + 5:
@@ -67,8 +74,33 @@ class Dealer:
                 print(self.dealt_cards)
                 self.can_deal = False
 
-    def evaluate_hands():
-        pass
+    # uses the pheavluator library to calculate poker hands by rank
+    def decide_winner(self):
+
+        for player in self.player_list:
+            player_cards = []
+            for card in player.hand:
+                player_cards.append(f"{card.rank}{card.suit}")
+            for card in self.river:
+                player_cards.append(f"{card.rank}{card.suit}")
+            player.hand_rank = evaluate_cards(player_cards[0], player_cards[1], player_cards[2], player_cards[3],
+                                                 player_cards[4], player_cards[5], player_cards[6])
+            #print(player.name + " " + player_cards[0] + " " + player_cards[1] + " " + player_cards[2] + " " + player_cards[3] + 
+            #                                    " " + player_cards[4] + " " + player_cards[5] + " " + player_cards[6])
+            
+        hand_ranks = []
+        for i in range(len(self.player_list)):
+            hand_ranks.append(self.player_list[i].hand_rank)  
+        winners_list = []
+        best_hand = min(hand_ranks)
+        for i in range(len(hand_ranks)):
+            print(self.player_list[i].name + ": " + str(hand_ranks[i]))
+            if best_hand == hand_ranks[i]:
+                winners_list.append(i)
+        return winners_list
+
+
+
 
     
     

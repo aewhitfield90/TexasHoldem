@@ -2,7 +2,7 @@ from settings import *
 import ctypes, pygame, sys, pygame_widgets
 from GameEngine import Poker
 from Player import Player
-from Tools import Button
+from Tools import *
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
@@ -43,11 +43,6 @@ class Game:
                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
         self.chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
 
-    #Funtion to draw texts on screen (e.g. Title)
-    def draw_text(self, text, size, text_col, x, y):
-        self.font = pygame.font.SysFont(GAME_FONT, size)
-        self.img = self.font.render(text, True, text_col)
-        self.screen.blit(self.img, (x, y))
 
     def run(self):
 
@@ -64,7 +59,7 @@ class Game:
 
             #main menu
             if self.game_state == "main_menu":
-                self.draw_text("POKER GAME", 72, TEXT_COLOR, 500, 100)
+                draw_text(self.screen, "POKER GAME", 72, TEXT_COLOR, 500, 100)
 
                 # start game button
                 if self.start_button.draw(self.screen):
@@ -86,9 +81,9 @@ class Game:
             
             #settings
             if self.game_state == "settings":
-                self.draw_text("SETTINGS", 72, TEXT_COLOR, 600, 100)
-                self.draw_text("Number of Players", 36, TEXT_COLOR, 300, 300)
-                self.draw_text("Starting Chips", 36, TEXT_COLOR, 300, 400)
+                draw_text(self.screen, "SETTINGS", 72, TEXT_COLOR, 600, 100)
+                draw_text(self.screen, "Number of Players", 36, TEXT_COLOR, 300, 300)
+                draw_text(self.screen, "Starting Chips", 36, TEXT_COLOR, 300, 400)
                 self.player_output.setText(self.player_slider.getValue())
                 self.player_output.disable()
                 self.chips_output.setText(self.chips_slider.getValue())
@@ -106,15 +101,17 @@ class Game:
                 #for card in poker_game.dealer.deck.deck:
                     #card.render_card(self.screen)
                 for i in range(self.player_num):
-                    self.draw_text(poker_game.dealer.player_list[i].name, 24, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i])
+                    draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i])
                     for card in poker_game.dealer.player_list[i].hand:
                         card.render_card(self.screen)
                 for card in poker_game.dealer.river:
                     card.render_card(self.screen)
+                if len(poker_game.dealer.winners) > 0:
+                    winners = ""
+                    for i in poker_game.dealer.winners:
+                        winners += poker_game.dealer.player_list[i].name + " "
+                    draw_text(self.screen, winners + " WINS! ", 40, TEXT_COLOR, 700, 50)
                 poker_game.update()
-
-
-
 
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
