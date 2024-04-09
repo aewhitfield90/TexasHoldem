@@ -20,6 +20,7 @@ class Dealer:
         self.players_check = False
         self.dealt_cards = 0
         self.winners = []
+        self.round_finished = False
 
     # adds new player to the table
     def add_player(self, player):
@@ -76,7 +77,6 @@ class Dealer:
 
     # uses the pheavluator library to calculate poker hands by rank
     def decide_winner(self):
-
         for player in self.player_list:
             player_cards = []
             for card in player.hand:
@@ -86,8 +86,7 @@ class Dealer:
             player.hand_rank = evaluate_cards(player_cards[0], player_cards[1], player_cards[2], player_cards[3],
                                                  player_cards[4], player_cards[5], player_cards[6])
             #print(player.name + " " + player_cards[0] + " " + player_cards[1] + " " + player_cards[2] + " " + player_cards[3] + 
-            #                                    " " + player_cards[4] + " " + player_cards[5] + " " + player_cards[6])
-            
+            #                                    " " + player_cards[4] + " " + player_cards[5] + " " + player_cards[6])   
         hand_ranks = []
         for i in range(len(self.player_list)):
             hand_ranks.append(self.player_list[i].hand_rank)  
@@ -97,10 +96,20 @@ class Dealer:
             print(self.player_list[i].name + ": " + str(hand_ranks[i]))
             if best_hand == hand_ranks[i]:
                 winners_list.append(i)
+        #eound finished variable should be changed for after payouts once chips are implemented
+        self.round_finished = True
         return winners_list
 
-
-
-
-    
-    
+    #function to get table back to starting point so a new round can be started
+    def reset_table(self):
+        for player in self.player_list:
+            for _ in range(len(player.hand)):
+                self.deck.deck.append(player.hand.pop())
+        for _ in range(len(self.river)):
+            self.deck.deck.append(self.river.pop())
+        self.winners = []
+        self.deck.shuffle_deck()
+        self.dealt_cards = 0
+        self.flop = False
+        self.can_deal = True
+        self.round_finished = False

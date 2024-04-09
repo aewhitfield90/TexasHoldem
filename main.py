@@ -19,7 +19,7 @@ class Game:
         self.game_menu = True
         self.player_name = "PLAYER"
         self.game_state = "main_menu"
-        self.player_num = 2
+        self.player_num = 5
         self.players = []
         self.starting_chips = 1000
         self.mouse_pos = pygame.mouse.get_pos()
@@ -49,13 +49,12 @@ class Game:
         self.start_time = pygame.time.get_ticks()
 
         while True:
-
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
-            #events = pygame.event.get()
 
             #main menu
             if self.game_state == "main_menu":
@@ -107,10 +106,18 @@ class Game:
                 for card in poker_game.dealer.river:
                     card.render_card(self.screen)
                 if len(poker_game.dealer.winners) > 0:
-                    winners = ""
-                    for i in poker_game.dealer.winners:
-                        winners += poker_game.dealer.player_list[i].name + " "
-                    draw_text(self.screen, winners + " WINS! ", 40, TEXT_COLOR, 700, 50)
+                    winner = 0
+                    if len(poker_game.dealer.winners) == 1:
+                        winner = poker_game.dealer.winners[0]
+                        draw_text(self.screen, f"{poker_game.dealer.player_list[winner].name} WINS! ", 40, TEXT_COLOR, 650, 50)
+                    else:
+                        draw_text(self.screen, "ITS A TIE! SPLIT POT!", 40, TEXT_COLOR, 600, 50)
+
+                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
+                    key = pygame.key.get_pressed()
+                    if key[pygame.K_w] == True:
+                        poker_game.dealer.reset_table()
+                        print("reset")
                 poker_game.update()
 
             # Time variables
