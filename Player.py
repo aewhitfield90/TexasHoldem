@@ -1,5 +1,3 @@
-from DeckBuilder import Card, Deck
-
 class Player:
     def __init__(self, name = "N/A", starting_chips = 0,):
         self.name = name
@@ -7,29 +5,33 @@ class Player:
         self.bet = 0
         self.bet_gap = 0
         self.hand = []
+        self.NPC = False #placeholder flag for NPC
         self.fold = False
         self.check = False
         self.all_in = False
         self.hand_rank = 9999
-        self.button = False #person located after the blinds and the one who starts the rounds
 
-    def fold(self):
+    # placeholder function for setting a player  as NPC
+    def NPC_toggle(self):
+        self.NPC = True
+    
+    def fold_hand(self):
         self.fold = True
+        self.check = True
         self.bet_gap = 0
     
     def bet_raise(self, amount):
         self.bet += amount
         self.chips -= amount
         self.check = True
+        if self.chips == 0:
+            self.all_in = True
     
-    def call(self):
+    def call_hand(self):
         self.bet_raise(self.bet_gap)
 
-    def check(self):
+    def check_hand(self):
         self.check = True
-    
-    def all_in(self):
-        self.bet_raise(self.chips)
     
     def add_chips(self, winnings):
         self.chips += winnings
@@ -39,11 +41,12 @@ class Player:
               'CHIPS: ' + str(self.chips) + '\n' +
               'BET: ' + str(self.bet))
 
-    def reset(self):
+    def reset_turn(self):
         self.bet = 0
-        self.fold = False
         self.check = False
+    
+    def reset_round(self):
+        self.reset_turn()
         self.all_in = False
-        for _ in range(len(self.hand_attributes)):
-            self.hand_attributes.pop()
-        self.win = False
+        self.fold = False
+        self.hand_rank = 9999

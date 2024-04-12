@@ -25,7 +25,7 @@ class Game:
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse = pygame.mouse.get_pressed()
         
-        #loading options images
+        # loading options images
         self.start_img = pygame.image.load("menu_buttons/start_button.png").convert_alpha()
         self.settings_img = pygame.image.load("menu_buttons/settings_button.png").convert_alpha()
         self.quit_img = pygame.image.load("menu_buttons/quit_button.png").convert_alpha()
@@ -35,14 +35,15 @@ class Game:
         self.quit_button = Button(650, 700, self.quit_img, 1)
         self.back_button = Button(150, 700, self.back_img, 1)
 
-        #options sliders
-        self.player_slider = Slider(self.screen, 700, 307, 300, 40, min=2, max=MAX_PLAYERS, step=1, 
-                                colour = (255,255,255), handleRadius = 25, initial = self.player_num)
-        self.player_output = TextBox(self.screen, 1050, 302, 100, 50, fontSize=30, colour = (255,255,255))
-        self.chips_slider = Slider(self.screen, 700, 407, 300, 40, min=200, max=10000, step=100, 
-                                colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
-        self.chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
-
+        # loading player action buttons
+        self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
+        self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
+        self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
+        self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
+        self.check_button = Button(1095, 840, self.check_img, 1)
+        self.call_button = Button(1220, 840, self.call_img, 1)
+        self.bet_button = Button(1345, 840, self.bet_img, 1)
+        self.fold_button = Button(1470, 840, self.fold_img, 1)
 
     def run(self):
 
@@ -56,7 +57,7 @@ class Game:
                     sys.exit()
 
 
-            #main menu
+            # main menu
             if self.game_state == "main_menu":
                 draw_text(self.screen, "POKER GAME", 72, TEXT_COLOR, 500, 100)
 
@@ -64,47 +65,116 @@ class Game:
                 if self.start_button.draw(self.screen):
                     self.game_state = "in_game"
                     self.players.append(Player(self.player_name, self.starting_chips))
-                    #creating table with players
+
+                    # creating table with players
                     for i in range (self.player_num - 1):
                         self.players.append(Player(NAME_LIST[i], self.starting_chips))
+                        self.players[i + 1].NPC_toggle()
                     poker_game = Poker(self.players)
+
+                    # slider for player betting
+                    player_bet_slider = Slider(self.screen, 1170, 800, 300, 20, min=poker_game.dealer.player_list[0].bet_gap + 1, 
+                                               max=poker_game.dealer.player_list[0].chips, step=1, colour = (255,255,255),
+                                                 handleRadius = 15, initial = poker_game.dealer.player_list[0].bet_gap + 15)
+                    player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour = (255,255,255))
+                    
 
                 # settings button
                 if self.settings_button.draw(self.screen):
                     self.game_state = "settings"
+
+                    # options sliders
+                    player_slider = Slider(self.screen, 700, 307, 300, 40, min=2, max=MAX_PLAYERS, step=1, 
+                                                colour = (255,255,255), handleRadius = 25, initial = self.player_num)
+                    player_output = TextBox(self.screen, 1050, 302, 100, 50, fontSize=30, colour = (255,255,255))
+                    chips_slider = Slider(self.screen, 700, 407, 300, 40, min=200, max=10000, step=100, 
+                                                colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
+                    chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
 
                 # quit button
                 if self.quit_button.draw(self.screen):
                     pygame.quit()
                     sys.exit()
             
-            #settings
+            # settings
             if self.game_state == "settings":
                 draw_text(self.screen, "SETTINGS", 72, TEXT_COLOR, 600, 100)
                 draw_text(self.screen, "Number of Players", 36, TEXT_COLOR, 300, 300)
                 draw_text(self.screen, "Starting Chips", 36, TEXT_COLOR, 300, 400)
-                self.player_output.setText(self.player_slider.getValue())
-                self.player_output.disable()
-                self.chips_output.setText(self.chips_slider.getValue())
-                self.chips_output.disable()
+                player_output.setText(player_slider.getValue())
+                player_output.disable()
+                chips_output.setText(chips_slider.getValue())
+                chips_output.disable()
                 pygame_widgets.update(event)
                 
-                #saving values when returning to main menu
+                # saving values when returning to main menu
                 if self.back_button.draw(self.screen):
                     self.game_state = "main_menu"
-                    self.player_num = self.player_slider.getValue()
-                    self.starting_chips = self.chips_slider.getValue()
+                    self.player_num = player_slider.getValue()
+                    self.starting_chips = chips_slider.getValue()
+                    del player_slider
+                    del player_output
+                    del chips_slider
+                    del chips_output
 
-            #in game
+            # in game
             if self.game_state == "in_game":
-                #for card in poker_game.dealer.deck.deck:
-                    #card.render_card(self.screen)
+                # printing player cards into screen
                 for i in range(self.player_num):
+                    # player names
                     draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i])
+                    # player chips
+                    draw_text(self.screen, f"Chips: {poker_game.dealer.player_list[i].chips}", 20, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i] + 30)
+                    # player cards
                     for card in poker_game.dealer.player_list[i].hand:
                         card.render_card(self.screen)
+                    # pot
+                    draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
+
+                # printing river cards
                 for card in poker_game.dealer.river:
                     card.render_card(self.screen)
+
+                # skip folded player
+                if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].fold == True and not(poker_game.dealer.players_status()):
+                    poker_game.pass_turn()
+
+                # player actions
+                # check
+                if self.check_button.draw(self.screen):
+                    if ((poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].bet_gap == 0 
+                                                                                and poker_game.dealer.player_list[0].check == False):
+                        poker_game.dealer.player_list[0].check_hand()
+                        print("hello")
+                        if(poker_game.dealer.player_list[0].check == True):
+                            poker_game.pass_turn()
+                    
+                # call
+                if self.call_button.draw(self.screen):
+                    if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
+                        if poker_game.dealer.player_list[0].chips >= poker_game.dealer.player_list[0].bet_gap:
+                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], poker_game.dealer.player_list[0].bet_gap)
+                        else:
+                            poker_game.dealer.player_list[0].bet_raise(poker_game.dealer.player_list[0].chips)
+                        if(poker_game.dealer.player_list[0].check == True):
+                            poker_game.pass_turn()
+                    
+                # raise/bet
+                player_bet_output.setText(player_bet_slider.getValue())
+                player_bet_output.disable()
+                if self.bet_button.draw(self.screen):
+                    if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
+                        poker_game.dealer.player_bet(poker_game.dealer.player_list[0], player_bet_slider.getValue())
+                        if(poker_game.dealer.player_list[0].check == True):
+                            poker_game.pass_turn()
+                # fold
+                if self.fold_button.draw(self.screen):
+                    if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
+                        poker_game.dealer.player_list[0].fold_hand()
+                        if(poker_game.dealer.player_list[0].check == True):
+                            poker_game.pass_turn()
+
+                # checking for winner and announcing it
                 if len(poker_game.dealer.winners) > 0:
                     winner = 0
                     if len(poker_game.dealer.winners) == 1:
@@ -113,6 +183,7 @@ class Game:
                     else:
                         draw_text(self.screen, "ITS A TIE! SPLIT POT!", 40, TEXT_COLOR, 600, 50)
 
+                # starting a new round on a mouse buttton (should be changed to time based or a button)
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
                     key = pygame.key.get_pressed()
                     if key[pygame.K_w] == True:
@@ -123,6 +194,7 @@ class Game:
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
             self.start_time = pygame.time.get_ticks()
+            pygame_widgets.update(event)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
 

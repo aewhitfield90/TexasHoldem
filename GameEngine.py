@@ -4,26 +4,43 @@ from River import Dealer
 class Poker:
     def __init__(self, players) :
         self.dealer = Dealer(players)
+        self.turn = 0
+
+    def pass_turn(self):
+        self.turn += 1
 
     def update(self):
-        #check for cards in players hands
+        # check for cards in players hands
         if self.dealer.dealt_cards < (self.dealer.player_count * 2):
             self.dealer.deal_player_cards()
-        
-        #check if all player cards have been dealt before flop
-        if self.dealer.dealt_cards == (self.dealer.player_count * 2) and (self.dealer.flop == False):
+
+        # NPC player actions
+        if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
+            if self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and self.dealer.player_list[self.turn % self.dealer.player_count].check == False:
+                if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0:
+                    self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
+                    self.turn += 1
+                    print(f"{self.dealer.player_list[self.turn % self.dealer.player_count].name}: {self.dealer.player_list[self.turn % self.dealer.player_count].check}")
+                else:
+                    self.dealer.player_list[self.turn % self.dealer.player_count].call_hand()
+                    self.turn += 1
+
+        # check if all player cards have been dealt before flop
+        if self.dealer.dealt_cards == (self.dealer.player_count * 2) and (self.dealer.flop == False) and self.dealer.players_status():
             self.dealer.deal_flop()
+            for player in self.dealer.player_list:
+                player.reset_turn()
         
-        #deal extra cards to river
-        if self.dealer.flop == True and self.dealer.can_deal == True:
+        # deal extra cards to river
+        if self.dealer.flop == True and self.dealer.can_deal == True and self.dealer.players_status():
             self.dealer.deal_after_flop()
+            for player in self.dealer.player_list:
+                player.reset_turn()
             if self.dealer.dealt_cards == (self.dealer.player_count * 2) + 5:
                 self.dealer.can_deal  = False
 
-        #check for player actions
-
-
-        #finish the round
+        # finish the round
         if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)):
             self.dealer.winners = self.dealer.decide_winner()
+            self.turn = 0
             
