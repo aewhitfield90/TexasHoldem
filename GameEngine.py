@@ -43,7 +43,9 @@ class Poker:
                 self.dealer.can_deal  = False
 
         # finish the round
-        if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)):
+        if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)) and self.dealer.players_status():
+            for player in self.dealer.player_list:
+                player.reset_turn()
             self.dealer.winners = self.dealer.decide_winner()
             for winner in self.dealer.winners:
                 self.dealer.player_list[winner].add_chips(int(self.dealer.pot/len(self.dealer.winners)))

@@ -15,6 +15,7 @@ class Card:
         self.card_img = pygame.image.load(self.img).convert_alpha()
         self.back_img = pygame.image.load(f"DeckOfCards/BACK.png").convert_alpha()
 
+    # function for printing cards into pygame screen
     def render_card(self, screen):
         temp_image = None
         if self.show == True:
