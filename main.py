@@ -56,7 +56,6 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-
             # main menu
             if self.game_state == "main_menu":
                 draw_text(self.screen, "POKER GAME", 72, TEXT_COLOR, 500, 100)
@@ -135,8 +134,9 @@ class Game:
                 for card in poker_game.dealer.river:
                     card.render_card(self.screen)
 
-                # skip folded player
-                if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].fold == True and not(poker_game.dealer.players_status()):
+                # skip folded or all in player
+                if ((poker_game.turn % poker_game.dealer.player_count) == 0 and not(poker_game.dealer.players_status()) 
+                     and (poker_game.dealer.player_list[0].fold == True or (poker_game.dealer.player_list[0].all_in == True))):
                     poker_game.pass_turn()
 
                 # player actions
@@ -145,7 +145,7 @@ class Game:
                     if ((poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].bet_gap == 0 
                                                                                 and poker_game.dealer.player_list[0].check == False):
                         poker_game.dealer.player_list[0].check_hand()
-                        print("hello")
+                        
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
                     
@@ -156,6 +156,7 @@ class Game:
                             poker_game.dealer.player_bet(poker_game.dealer.player_list[0], poker_game.dealer.player_list[0].bet_gap)
                         else:
                             poker_game.dealer.player_list[0].bet_raise(poker_game.dealer.player_list[0].chips)
+
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
                     
@@ -165,12 +166,14 @@ class Game:
                 if self.bet_button.draw(self.screen):
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         poker_game.dealer.player_bet(poker_game.dealer.player_list[0], player_bet_slider.getValue())
+
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
                 # fold
                 if self.fold_button.draw(self.screen):
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         poker_game.dealer.player_list[0].fold_hand()
+                        
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
 

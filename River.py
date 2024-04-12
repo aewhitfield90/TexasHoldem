@@ -39,10 +39,29 @@ class Dealer:
         if removed == False:
             print("Player Not Found.")
     
-    # adds bet to round pot
+    def get_highest_bet(self):
+        bet_list = []
+        for player in self.player_list:
+            bet_list.append(player.bet)
+        self.highest_bet = max(bet_list)
+
+    def set_player_bet_gaps(self):
+        for player in self.player_list:
+            player.bet_gap = self.highest_bet - player.bet
+
+    # adds bet_raise to the pot
     def player_bet(self, player, bet):
         player.bet_raise(bet)
         self.pot += bet
+        #checking if bets have changed and setting them
+        self.get_highest_bet()
+        self.set_player_bet_gaps()
+    
+    # function for adding player matching bet to the pot
+    def player_call(self, player):
+        player.call_hand()
+        self.pot += player.bet_gap
+
 
     # deals player cards
     def deal_player_cards(self):

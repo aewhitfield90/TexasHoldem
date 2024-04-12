@@ -11,7 +11,7 @@ class Player:
         self.all_in = False
         self.hand_rank = 9999
 
-    # placeholder function for setting a player  as NPC
+    # placeholder function for setting a player as an NPC
     def NPC_toggle(self):
         self.NPC = True
     
@@ -26,6 +26,9 @@ class Player:
         self.check = True
         if self.chips == 0:
             self.all_in = True
+    
+    def set_bet_gap(self, gap):
+        self.bet_gap = gap
     
     def call_hand(self):
         self.bet_raise(self.bet_gap)
@@ -43,6 +46,7 @@ class Player:
 
     def reset_turn(self):
         self.bet = 0
+        self.bet_gap = 0
         self.check = False
     
     def reset_round(self):
