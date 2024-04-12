@@ -167,6 +167,10 @@ class Game:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         poker_game.dealer.player_bet(poker_game.dealer.player_list[0], player_bet_slider.getValue())
 
+                        player_bet_slider = Slider(self.screen, 1170, 800, 300, 20, min=poker_game.dealer.player_list[0].bet_gap + 1, 
+                                               max=poker_game.dealer.player_list[0].chips, step=1, colour = (255,255,255),
+                                                 handleRadius = 15, initial = poker_game.dealer.player_list[0].bet_gap + 15)
+
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
                 # fold
@@ -185,14 +189,22 @@ class Game:
                         draw_text(self.screen, f"{poker_game.dealer.player_list[winner].name} WINS! ", 40, TEXT_COLOR, 650, 50)
                     else:
                         draw_text(self.screen, "ITS A TIE! SPLIT POT!", 40, TEXT_COLOR, 600, 50)
+                
+                poker_game.update()
 
-                # starting a new round on a mouse buttton (should be changed to time based or a button)
+                # starting a new round on a key press [W] (should be changed to time based or a button)
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
                     key = pygame.key.get_pressed()
                     if key[pygame.K_w] == True:
                         poker_game.dealer.reset_table()
-                        print("reset")
-                poker_game.update()
+                        # quits game if player runs out of chips
+                        if (poker_game.dealer.player_list[0].chips == 0):
+                            self.game_state = "main_menu"
+                            del player_bet_slider
+                            del player_bet_output
+                            del poker_game
+                            self.players = []
+                            
 
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000

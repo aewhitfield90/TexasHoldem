@@ -89,8 +89,8 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
         self.flop = True
-        for player in self.player_list:
-            print(player.name + " " + f"{player.hand[0].rank}{player.hand[0].suit}" + " " + f"{player.hand[1].rank}{player.hand[1].suit}")
+        #for player in self.player_list:
+            #print(player.name + " " + f"{player.hand[0].rank}{player.hand[0].suit}" + " " + f"{player.hand[1].rank}{player.hand[1].suit}")
 
     # deals the other 2 cards after flop
     def deal_after_flop(self):
@@ -100,7 +100,7 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
             if self.dealt_cards == (self.player_count * 2) + 5:
-                print(self.dealt_cards)
+                #print(self.dealt_cards)
                 self.can_deal = False
 
     # uses the pheavluator library to calculate poker hands by rank
@@ -120,7 +120,7 @@ class Dealer:
         winners_list = []
         best_hand = min(hand_ranks)
         for i in range(len(hand_ranks)):
-            print(self.player_list[i].name + ": " + str(hand_ranks[i]))
+            #print(self.player_list[i].name + ": " + str(hand_ranks[i]))
             if best_hand == hand_ranks[i]:
                 winners_list.append(i)
         self.round_finished = True

@@ -47,7 +47,8 @@ class Player:
     def reset_turn(self):
         self.bet = 0
         self.bet_gap = 0
-        self.check = False
+        if self.all_in == False:
+            self.check = False
     
     def reset_round(self):
         self.reset_turn()
