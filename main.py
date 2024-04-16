@@ -1,12 +1,14 @@
 from settings import *
-import ctypes, pygame, sys, pygame_widgets
+import ctypes, pygame, sys, pygame_widgets, pygame_textinput
 from GameEngine import Poker
 from Player import Player
 from Tools import *
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
+
 ctypes.windll.user32.SetProcessDPIAware()
+
 
 class Game:
     """
@@ -44,6 +46,7 @@ class Game:
         self.starting_chips = 1000
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse = pygame.mouse.get_pressed()
+        self.textbox_active = False
 
         # Load images and create buttons for the main menu and in-game actions
         self.load_images()
@@ -53,11 +56,15 @@ class Game:
         """
         Main game loop that handles events, updates game state, and renders game elements.
         """
+        player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
         self.start_time = pygame.time.get_ticks()
 
         while True:
-            
-            for event in pygame.event.get():
+            textbox_active = False  # Flag to track if TextBox was clicked
+
+            events = pygame.event.get()  # Get all pygame events
+             
+            for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -77,13 +84,9 @@ class Game:
                         self.players[i + 1].NPC_toggle()
                     poker_game = Poker(self.players)
 
-                    # slider for player betting
-                    player_bet_slider = Slider(self.screen, 1170, 800, 300, 20, min=poker_game.dealer.player_list[0].bet_gap + 1, 
-                                               max=poker_game.dealer.player_list[0].chips, step=1, colour = (255,255,255),
-                                                 handleRadius = 15, initial = poker_game.dealer.player_list[0].bet_gap + 15)
-                    player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour = (255,255,255))
-                    
+            
 
+                
                 # settings button
                 if self.settings_button.draw(self.screen):
                     self.game_state = "settings"
@@ -124,6 +127,7 @@ class Game:
 
             # in game
             if self.game_state == "in_game":
+                
                 # printing player cards into screen
                 for i in range(self.player_num):
                     # player names
@@ -135,6 +139,23 @@ class Game:
                         card.render_card(self.screen)
                     # pot
                     draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
+
+
+                # Update the TextBox based on events
+                for event in events: 
+                    print(f"Textbox active: {textbox_active}")
+    
+                # Check if mouse clicked inside TextBox
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if 1490 <= event.pos[0] <= 1490 + 80 and 790 <= event.pos[1] <= 790 + 40:
+                            textbox_active = True
+                            print("Textbox clicked!")
+                        else :
+                            textbox_active = False
+                # Keep updating TextBox while it's active
+                    if textbox_active:
+                        player_bet_output.listen(event)
+
 
                 # printing river cards
                 for card in poker_game.dealer.river:
@@ -165,20 +186,28 @@ class Game:
 
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
+
+                bet_input = player_bet_output.getText()
+                if bet_input:
+                    bet_amount = min(int(bet_input), poker_game.dealer.player_list[0].chips)
+                else:
+                    bet_amount = 0
                     
                 # raise/bet
-                player_bet_output.setText(player_bet_slider.getValue())
-                player_bet_output.disable()
-                if self.bet_button.draw(self.screen):
+                if self.bet_button.draw(self.screen) and event.type == pygame.MOUSEBUTTONDOWN:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
-                        poker_game.dealer.player_bet(poker_game.dealer.player_list[0], player_bet_slider.getValue())
+                        try:
+                            bet_amount = int(player_bet_output.getText())
+                            if bet_amount > poker_game.dealer.player_list[0].chips:
+                                print("Not enough chips!")
+                                return  # Exit early if not enough chips
+                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
+                            player_bet_output.setText(str(bet_amount + 15))
+                            if poker_game.dealer.player_list[0].check == True:
+                                poker_game.pass_turn()
+                        except ValueError:
+                            print("Invalid bet amount!")
 
-                        player_bet_slider = Slider(self.screen, 1170, 800, 300, 20, min=poker_game.dealer.player_list[0].bet_gap + 1, 
-                                               max=poker_game.dealer.player_list[0].chips, step=1, colour = (255,255,255),
-                                                 handleRadius = 15, initial = poker_game.dealer.player_list[0].bet_gap + 15)
-
-                        if(poker_game.dealer.player_list[0].check == True):
-                            poker_game.pass_turn()
                 # fold
                 if self.fold_button.draw(self.screen):
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
@@ -206,7 +235,6 @@ class Game:
                         # quits game if player runs out of chips
                         if (poker_game.dealer.player_list[0].chips == 0):
                             self.game_state = "main_menu"
-                            del player_bet_slider
                             del player_bet_output
                             del poker_game
                             self.players = []
@@ -215,7 +243,7 @@ class Game:
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
             self.start_time = pygame.time.get_ticks()
-            pygame_widgets.update(event)
+            pygame_widgets.update(events)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
 
