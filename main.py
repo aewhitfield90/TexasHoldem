@@ -11,10 +11,29 @@ ctypes.windll.user32.SetProcessDPIAware()
 
 
 class Game:
-    def __init__(self):
+    """
+    Main class to initialize and run the Texas Hold'em poker game, handling game states, user inputs,
+    and rendering the game interface.
 
-        # General setup\
-        self.textbox_active = False
+    Attributes:
+        screen (pygame.Surface): The main screen surface on which all game elements are drawn.
+        clock (pygame.Clock): Clock used to manage game's frame rate.
+        game_menu (bool): Flag to indicate if the game menu is active.
+        player_name (str): Default player name, used if no input is given.
+        game_state (str): Current state of the game, controls which part of the game logic is executed.
+        player_num (int): Number of players in the game.
+        players (list): List of Player objects participating in the game.
+        starting_chips (int): Initial number of chips each player starts with.
+        start_img, settings_img, quit_img, back_img (pygame.Surface): Surfaces for menu button images.
+        start_button, settings_button, quit_button, back_button (Button): Button widgets for menu interactions.
+        check_img, call_img, bet_img, fold_img (pygame.Surface): Surfaces for in-game action button images.
+        check_button, call_button, bet_button, fold_button (Button): Button widgets for in-game actions.
+    """
+
+    def __init__(self):
+        """
+        General setup: Initializes the game environment, setting up the screen, loading images, and creating buttons.
+        """
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("POKER GAME")
@@ -27,31 +46,19 @@ class Game:
         self.starting_chips = 1000
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse = pygame.mouse.get_pressed()
+        self.textbox_active = False
+
+        # Load images and create buttons for the main menu and in-game actions
+        self.load_images()
+        self.create_buttons()
         
-        # loading options images
-        self.start_img = pygame.image.load("menu_buttons/start_button.png").convert_alpha()
-        self.settings_img = pygame.image.load("menu_buttons/settings_button.png").convert_alpha()
-        self.quit_img = pygame.image.load("menu_buttons/quit_button.png").convert_alpha()
-        self.back_img = pygame.image.load("menu_buttons/back_button.png").convert_alpha()
-        self.start_button = Button(650, 300, self.start_img, 1)
-        self.settings_button = Button(650, 500, self.settings_img, 1)
-        self.quit_button = Button(650, 700, self.quit_img, 1)
-        self.back_button = Button(150, 700, self.back_img, 1)
-
-        # loading player action buttons
-        self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
-        self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
-        self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
-        self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
-        self.check_button = Button(1095, 840, self.check_img, 1)
-        self.call_button = Button(1220, 840, self.call_img, 1)
-        self.bet_button = Button(1345, 840, self.bet_img, 1)
-        self.fold_button = Button(1470, 840, self.fold_img, 1)
-
-
     def run(self):
+        """
+        Main game loop that handles events, updates game state, and renders game elements.
+        """
         player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
         self.start_time = pygame.time.get_ticks()
+
         while True:
             textbox_active = False  # Flag to track if TextBox was clicked
 
@@ -242,6 +249,34 @@ class Game:
 
             self.clock.tick(FPS)
 
+    def load_images(self):
+        """
+        Loads images for all buttons used in the game.
+        """
+        self.start_img = pygame.image.load("menu_buttons/start_button.png").convert_alpha()
+        self.settings_img = pygame.image.load("menu_buttons/settings_button.png").convert_alpha()
+        self.quit_img = pygame.image.load("menu_buttons/quit_button.png").convert_alpha()
+        self.back_img = pygame.image.load("menu_buttons/back_button.png").convert_alpha()
+        self.start_button = Button(650, 300, self.start_img, 1)
+        self.settings_button = Button(650, 500, self.settings_img, 1)
+        self.quit_button = Button(650, 700, self.quit_img, 1)
+        self.back_button = Button(150, 700, self.back_img, 1)
+    
+    
+    def create_buttons(self):
+        """
+        Creates button widgets for all actions in the game.
+        """
+        # loading player action buttons
+        self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
+        self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
+        self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
+        self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
+        self.check_button = Button(1095, 840, self.check_img, 1)
+        self.call_button = Button(1220, 840, self.call_img, 1)
+        self.bet_button = Button(1345, 840, self.bet_img, 1)
+        self.fold_button = Button(1470, 840, self.fold_img, 1)
+    
 if __name__ == '__main__':
     game = Game()
     game.run()
