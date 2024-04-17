@@ -13,7 +13,7 @@ ctypes.windll.user32.SetProcessDPIAware()
 class Game:
     def __init__(self):
 
-        # General setup\
+        # General setup
         self.textbox_active = False
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -50,9 +50,9 @@ class Game:
 
 
     def run(self):
-        player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
         self.start_time = pygame.time.get_ticks()
         while True:
+            
             textbox_active = False  # Flag to track if TextBox was clicked
 
             events = pygame.event.get()  # Get all pygame events
@@ -69,6 +69,7 @@ class Game:
                 # start game button
                 if self.start_button.draw(self.screen):
                     self.game_state = "in_game"
+                    player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
                     self.players.append(Player(self.player_name, self.starting_chips))
 
                     # creating table with players
@@ -120,7 +121,7 @@ class Game:
 
             # in game
             if self.game_state == "in_game":
-                
+
                 # printing player cards into screen
                 for i in range(self.player_num):
                     # player names
@@ -136,7 +137,7 @@ class Game:
 
                 # Update the TextBox based on events
                 for event in events: 
-                    print(f"Textbox active: {textbox_active}")
+                    #print(f"Textbox active: {textbox_active}")
     
                 # Check if mouse clicked inside TextBox
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -147,7 +148,18 @@ class Game:
                             textbox_active = False
                 # Keep updating TextBox while it's active
                     if textbox_active:
-                        player_bet_output.listen(event)
+                        if event.type == pygame.KEYDOWN:
+                            if pygame.K_0 <= event.key <= pygame.K_9 or event.key == pygame.K_BACKSPACE:
+                                player_bet_output.listen(event)
+
+                                bet_input = player_bet_output.get_text()
+
+                                try:
+                                    bet_amount = int(bet_input)
+
+                                    bet_amount = min(bet_amount, poker_game.dealer.player_list[0].chips)
+                                except ValueError:
+                                    print("Invalid input! Please enter a valid number.")
 
 
                 # printing river cards
@@ -180,24 +192,28 @@ class Game:
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
 
-                bet_input = player_bet_output.getText()
-                if bet_input:
-                    bet_amount = min(int(bet_input), poker_game.dealer.player_list[0].chips)
-                else:
-                    bet_amount = 0
-                    
+  
                 # raise/bet
                 if self.bet_button.draw(self.screen) and event.type == pygame.MOUSEBUTTONDOWN:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-                            if bet_amount > poker_game.dealer.player_list[0].chips:
+                            min_bet = 15
+                            max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
+
+                            if bet_amount > max_bet:
+                                print("Bet Too High!")
+                                player_bet_output.setText('')  # Reset TextBox input
+                            elif bet_amount < min_bet:
                                 print("Not enough chips!")
-                                return  # Exit early if not enough chips
-                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
-                            player_bet_output.setText(str(bet_amount + 15))
-                            if poker_game.dealer.player_list[0].check == True:
-                                poker_game.pass_turn()
+                                player_bet_output.setText('')  # Reset TextBox input
+                            else:
+                                # Process the bet
+                                poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
+                                player_bet_output.setText(str(bet_amount))
+                                if poker_game.dealer.player_list[0].check == True:
+                                    poker_game.pass_turn()
+
                         except ValueError:
                             print("Invalid bet amount!")
 
@@ -231,6 +247,23 @@ class Game:
                             del player_bet_output
                             del poker_game
                             self.players = []
+                
+                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
+                    for x in range (self.player_num):
+                        if (poker_game.dealer.player_list[0].chips == 0):
+                            self.game_state = "main_menu"
+                            del player_bet_output
+                            del poker_game
+                            self.players = []
+                        elif(poker_game.dealer.player_list[x].chips == 0):
+                            draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, BACKGROUND_COLOR, PLAYER_X[x], PLAYER_Y[x])
+                            draw_text(self.screen, f"Chips: {poker_game.dealer.player_list[i].chips}", 20, 
+                                      BACKGROUND_COLOR, PLAYER_X[i], PLAYER_Y[i] + 30)
+
+
+                     
+                    
+
                             
 
             # Time variables
