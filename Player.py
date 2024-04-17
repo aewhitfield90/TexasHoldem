@@ -47,11 +47,11 @@ class Player:
     def reset_turn(self):
         self.bet = 0
         self.bet_gap = 0
-        if self.all_in == False:
+        if self.all_in == False and self.fold == False:
             self.check = False
     
     def reset_round(self):
-        self.reset_turn()
         self.all_in = False
         self.fold = False
+        self.reset_turn()
         self.hand_rank = 9999

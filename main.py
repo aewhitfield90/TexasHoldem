@@ -56,10 +56,10 @@ class Game:
         """
         Main game loop that handles events, updates game state, and renders game elements.
         """
-        player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
         self.start_time = pygame.time.get_ticks()
 
         while True:
+            
             textbox_active = False  # Flag to track if TextBox was clicked
 
             events = pygame.event.get()  # Get all pygame events
@@ -76,6 +76,7 @@ class Game:
                 # start game button
                 if self.start_button.draw(self.screen):
                     self.game_state = "in_game"
+                    player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
                     self.players.append(Player(self.player_name, self.starting_chips))
 
                     # creating table with players
@@ -84,9 +85,10 @@ class Game:
                         self.players[i + 1].NPC_toggle()
                     poker_game = Poker(self.players)
 
-            
+                    # textbox for player betting
+                    player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
 
-                
+
                 # settings button
                 if self.settings_button.draw(self.screen):
                     self.game_state = "settings"
@@ -99,11 +101,13 @@ class Game:
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
 
+
                 # quit button
                 if self.quit_button.draw(self.screen):
                     pygame.quit()
                     sys.exit()
             
+
             # settings
             if self.game_state == "settings":
                 draw_text(self.screen, "SETTINGS", 72, TEXT_COLOR, 600, 100)
@@ -127,7 +131,7 @@ class Game:
 
             # in game
             if self.game_state == "in_game":
-                
+
                 # printing player cards into screen
                 for i in range(self.player_num):
                     # player names
@@ -143,7 +147,7 @@ class Game:
 
                 # Update the TextBox based on events
                 for event in events: 
-                    print(f"Textbox active: {textbox_active}")
+                    #print(f"Textbox active: {textbox_active}")
     
                 # Check if mouse clicked inside TextBox
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -154,17 +158,24 @@ class Game:
                             textbox_active = False
                 # Keep updating TextBox while it's active
                     if textbox_active:
-                        player_bet_output.listen(event)
+                        if event.type == pygame.KEYDOWN:
+                            if pygame.K_0 <= event.key <= pygame.K_9 or event.key == pygame.K_BACKSPACE:
+                                player_bet_output.listen(event)
+
+                                bet_input = player_bet_output.get_text()
+
+                                try:
+                                    bet_amount = int(bet_input)
+
+                                    bet_amount = min(bet_amount, poker_game.dealer.player_list[0].chips)
+                                except ValueError:
+                                    print("Invalid input! Please enter a valid number.")
 
 
                 # printing river cards
                 for card in poker_game.dealer.river:
                     card.render_card(self.screen)
 
-                # skip folded or all in player
-                if ((poker_game.turn % poker_game.dealer.player_count) == 0 and not(poker_game.dealer.players_status()) 
-                     and (poker_game.dealer.player_list[0].fold == True or (poker_game.dealer.player_list[0].all_in == True))):
-                    poker_game.pass_turn()
 
                 # player actions
                 # check
@@ -187,24 +198,28 @@ class Game:
                         if(poker_game.dealer.player_list[0].check == True):
                             poker_game.pass_turn()
 
-                bet_input = player_bet_output.getText()
-                if bet_input:
-                    bet_amount = min(int(bet_input), poker_game.dealer.player_list[0].chips)
-                else:
-                    bet_amount = 0
-                    
+  
                 # raise/bet
                 if self.bet_button.draw(self.screen) and event.type == pygame.MOUSEBUTTONDOWN:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-                            if bet_amount > poker_game.dealer.player_list[0].chips:
+                            min_bet = 15
+                            max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
+
+                            if bet_amount > max_bet:
+                                print("Bet Too High!")
+                                player_bet_output.setText('')  # Reset TextBox input
+                            elif bet_amount < min_bet:
                                 print("Not enough chips!")
-                                return  # Exit early if not enough chips
-                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
-                            player_bet_output.setText(str(bet_amount + 15))
-                            if poker_game.dealer.player_list[0].check == True:
-                                poker_game.pass_turn()
+                                player_bet_output.setText('')  # Reset TextBox input
+                            else:
+                                # Process the bet
+                                poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
+                                player_bet_output.setText(str(bet_amount))
+                                if poker_game.dealer.player_list[0].check == True:
+                                    poker_game.pass_turn()
+
                         except ValueError:
                             print("Invalid bet amount!")
 
@@ -228,7 +243,8 @@ class Game:
                 poker_game.update()
 
                 # starting a new round on a key press [W] (should be changed to time based or a button)
-                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
+                
+                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5 and poker_game.dealer.players_status():
                     key = pygame.key.get_pressed()
                     if key[pygame.K_w] == True:
                         poker_game.dealer.reset_table()
@@ -238,7 +254,21 @@ class Game:
                             del player_bet_output
                             del poker_game
                             self.players = []
-                            
+                
+                '''
+                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
+                    for x in range (self.player_num):
+                        if (poker_game.dealer.player_list[0].chips == 0):
+                            self.game_state = "main_menu"
+                            del player_bet_output
+                            del poker_game
+                            self.players = []
+                        elif(poker_game.dealer.player_list[x].chips <= 0):
+                            draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, BACKGROUND_COLOR, PLAYER_X[x], PLAYER_Y[x])
+                            draw_text(self.screen, f"Chips: {poker_game.dealer.player_list[i].chips}", 20, 
+                                      BACKGROUND_COLOR, PLAYER_X[i], PLAYER_Y[i] + 30)
+                            poker_game.dealer.remove_player(poker_game.dealer.player_list[x].name)
+                '''            
 
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
