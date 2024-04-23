@@ -129,10 +129,16 @@ class Dealer:
     def reset_table(self):
         for player in self.player_list:
             for _ in range(len(player.hand)):
-                self.deck.deck.append(player.hand.pop())
+                card = player.hand.pop()
+                card.hide_card()
+                self.deck.deck.append(card)
             player.reset_round()
         for _ in range(len(self.river)):
-            self.deck.deck.append(self.river.pop())
+            card = self.river.pop()
+            card.hide_card()
+            self.deck.deck.append(card)
+        #for card in self.deck:
+        #    card.hide_card()
 
         self.winners = []
         self.deck.shuffle_deck()
