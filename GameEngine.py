@@ -19,18 +19,18 @@ class Poker:
 
         # NPC player actions
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
-            print("enteredfirstloop")
-            if self.dealer.player_list[self.turn % self.dealer.player_count].NPC == False and self.dealer.player_list[self.turn % self.dealer.player_count].check == False: # if Player in list is an NPC and Real player didn't select CHECK
-                print("entered2loop")
+            #print("enteredfirstloop")
+            if self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and self.dealer.player_list[self.turn % self.dealer.player_count].check == False: # if Player in list is an NPC and Real player didn't select CHECK
+                #print("entered2loop")
                 if self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True:#if player selects ALL IN pass turn
-                    print("entered3loop")
-                    PlayerNPC(self.dealer)
+                    #print("entered3loop")
+                    #PlayerNPC(self.dealer)
                     self.pass_turn()
 
                 elif self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #if there is no difference in NPC bet amount and Real Player bet amount, NPC CHECKS there own hand
                     self.dealer.player_list[self.turn % self.dealer.player_count].check_hand() 
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
-            print("enteredfirstloop")
+            #print("enteredfirstloop")
             if (self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True or 
                   self.dealer.player_list[self.turn % self.dealer.player_count].fold == True):
                     self.pass_turn()
