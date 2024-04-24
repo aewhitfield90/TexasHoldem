@@ -1,6 +1,5 @@
 #GameEngine
 from River import Dealer
-import PlayerNPC
 
 class Poker:
     def __init__(self, players) :
@@ -18,31 +17,7 @@ class Poker:
             self.dealer.deal_player_cards()   
 
         # NPC player actions
-<<<<<<< HEAD
-        if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
-            #print("enteredfirstloop")
-            if self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and self.dealer.player_list[self.turn % self.dealer.player_count].check == False: # if Player in list is an NPC and Real player didn't select CHECK
-                #print("entered2loop")
-                if self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True:#if player selects ALL IN pass turn
-                    #print("entered3loop")
-                    #PlayerNPC(self.dealer)
-=======
-<<<<<<< HEAD
-        if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
-            if self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and self.dealer.player_list[self.turn % self.dealer.player_count].check == False: # if Player in list is an NPC and Real player didn't select CHECK
-                if self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True:#if player selects ALL IN pass turn
->>>>>>> 83401e6d92032c93a209ff5f05dc61126615bd3f
-                    self.pass_turn()
-
-                elif self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #if there is no difference in NPC bet amount and Real Player bet amount, NPC CHECKS there own hand
-                    self.dealer.player_list[self.turn % self.dealer.player_count].check_hand() 
-<<<<<<< HEAD
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
-            #print("enteredfirstloop")
-=======
-=======
-        if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
->>>>>>> 83401e6d92032c93a209ff5f05dc61126615bd3f
             if (self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True or 
                   self.dealer.player_list[self.turn % self.dealer.player_count].fold == True):
                     self.pass_turn()
@@ -51,7 +26,6 @@ class Poker:
                   self.dealer.player_list[self.turn % self.dealer.player_count].check == False):
                 if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0:
                     self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
->>>>>>> 605f5979718bb9c8da305139cce373e1ce63dfa7
                     self.pass_turn()
 
                 else:
