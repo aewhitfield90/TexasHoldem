@@ -62,7 +62,6 @@ class Dealer:
         player.call_hand()
         self.pot += player.bet_gap
 
-
     # deals player cards
     def deal_player_cards(self):
         for player in self.player_list:
@@ -131,6 +130,7 @@ class Dealer:
         for player in self.player_list:
             for _ in range(len(player.hand)):
                 self.deck.deck.append(player.hand.pop())
+            player.reset_round()
         for _ in range(len(self.river)):
             self.deck.deck.append(self.river.pop())
 
