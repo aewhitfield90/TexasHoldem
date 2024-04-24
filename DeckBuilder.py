@@ -8,7 +8,7 @@ class Card:
     def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank
-        self.show = True
+        self.show = False
         self.position = (500, 500)
         self.id = f"{self.rank}{self.suit}"
         self.img = f"DeckOfCards/{self.id}.png"
@@ -24,6 +24,12 @@ class Card:
             temp_image = self.back_img
         image = pygame.transform.scale(temp_image, (120,120))
         screen.blit(image, self.position)
+    
+    def show_card(self):
+        self.show = True
+    
+    def hide_card(self):
+        self.show = False
 
 class Deck:
     def __init__(self): #creates a new deck and shuffles it

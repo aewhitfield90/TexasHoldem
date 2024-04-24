@@ -26,6 +26,7 @@ class Dealer:
     def add_player(self, player):
         if self.player_count < MAX_PLAYERS:
             self.player_list.append(player)
+            self.player_count = len(self.player_list)
         else:
             print("Cannot Add Player")
     
@@ -34,8 +35,10 @@ class Dealer:
         removed = False
         for player in self.player_list:
             if player.name == player_name:
-                self.player_list.pop(player)
+                self.player_list.remove(player)
+                del player
                 removed = True
+                self.player_count = len(self.player_list)
         if removed == False:
             print("Player Not Found.")
     

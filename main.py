@@ -81,8 +81,7 @@ class Game:
 
                     # creating table with players
                     for i in range (self.player_num - 1):
-                        self.players.append(Player(NAME_LIST[i], self.starting_chips))
-                        self.players[i + 1].NPC_toggle()
+                        self.players.append(Player(NAME_LIST[i], self.starting_chips, True)) # True flag for NPC player
                     poker_game = Poker(self.players)
 
                     # textbox for player betting
@@ -133,7 +132,7 @@ class Game:
             if self.game_state == "in_game":
 
                 # printing player cards into screen
-                for i in range(self.player_num):
+                for i in range(poker_game.dealer.player_count):
                     # player names
                     draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i])
                     # player chips
@@ -247,28 +246,34 @@ class Game:
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5 and poker_game.dealer.players_status():
                     key = pygame.key.get_pressed()
                     if key[pygame.K_w] == True:
+                        # remove npc player if they reach 0 chips
+                        players_to_remove =[]
+                        for player in poker_game.dealer.player_list:
+                            if player.NPC and player.chips == 0:
+                                players_to_remove.append(player.name)
+                        for player in players_to_remove:
+                            poker_game.dealer.remove_player(player)
+
+                        #starts a new table if main_player is the only player left
+                        if poker_game.dealer.player_count < 2:
+                            main_player = poker_game.dealer.player_list[0]
+                            self.players = []
+                            self.players.append(main_player)
+                            for i in range(self.player_num - 1):
+                                self.players.append(Player(NAME_LIST[i], main_player.chips, True))
+                            poker_game = Poker(self.players)
+                            poker_game.turn = 0
+                        
+                        # restart table
                         poker_game.dealer.reset_table()
+
                         # quits game if player runs out of chips
                         if (poker_game.dealer.player_list[0].chips == 0):
                             self.game_state = "main_menu"
                             del player_bet_output
                             del poker_game
                             self.players = []
-                
-                '''
-                if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5:
-                    for x in range (self.player_num):
-                        if (poker_game.dealer.player_list[0].chips == 0):
-                            self.game_state = "main_menu"
-                            del player_bet_output
-                            del poker_game
-                            self.players = []
-                        elif(poker_game.dealer.player_list[x].chips <= 0):
-                            draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, BACKGROUND_COLOR, PLAYER_X[x], PLAYER_Y[x])
-                            draw_text(self.screen, f"Chips: {poker_game.dealer.player_list[i].chips}", 20, 
-                                      BACKGROUND_COLOR, PLAYER_X[i], PLAYER_Y[i] + 30)
-                            poker_game.dealer.remove_player(poker_game.dealer.player_list[x].name)
-                '''            
+                         
 
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000

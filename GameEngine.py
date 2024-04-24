@@ -28,10 +28,12 @@ class Poker:
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
             if (self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True or 
                   self.dealer.player_list[self.turn % self.dealer.player_count].fold == True):
+                    
                     self.pass_turn()
 
             if (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and 
                   self.dealer.player_list[self.turn % self.dealer.player_count].check == False):
+                
                 if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0:
                     self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
                     self.pass_turn()
@@ -69,4 +71,3 @@ class Poker:
             for winner in self.dealer.winners:
                 self.dealer.player_list[winner].add_chips(int(self.dealer.pot/len(self.dealer.winners)))
             self.turn = 0
-            
