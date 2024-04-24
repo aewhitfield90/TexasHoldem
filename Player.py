@@ -1,11 +1,11 @@
 class Player:
-    def __init__(self, name = "N/A", starting_chips = 0,):
+    def __init__(self, name = "N/A", starting_chips = 0, NPC = False):
         self.name = name
         self.chips = starting_chips
         self.bet = 0
         self.bet_gap = 0
         self.hand = []
-        self.NPC = False #placeholder flag for NPC
+        self.NPC = NPC #placeholder flag for NPC
         self.fold = False
         self.check = False
         self.all_in = False
