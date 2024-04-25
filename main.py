@@ -47,6 +47,7 @@ class Game:
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse = pygame.mouse.get_pressed()
         self.textbox_active = False
+        self.start_time = pygame.time.get_ticks()
 
         # Load images and create buttons for the main menu and in-game actions
         self.load_images()
@@ -57,7 +58,6 @@ class Game:
         Main game loop that handles events, updates game state, and renders game elements.
         """
         self.start_time = pygame.time.get_ticks()
-
         while True:
             
             textbox_active = False  # Flag to track if TextBox was clicked
@@ -99,6 +99,7 @@ class Game:
                     chips_slider = Slider(self.screen, 700, 407, 300, 40, min=200, max=10000, step=100, 
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
+                    player_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255))
 
 
                 # quit button
@@ -112,6 +113,7 @@ class Game:
                 draw_text(self.screen, "SETTINGS", 72, TEXT_COLOR, 600, 100)
                 draw_text(self.screen, "Number of Players", 36, TEXT_COLOR, 300, 300)
                 draw_text(self.screen, "Starting Chips", 36, TEXT_COLOR, 300, 400)
+                draw_text(self.screen, "Player Name", 36, TEXT_COLOR, 300, 500)
                 player_output.setText(player_slider.getValue())
                 player_output.disable()
                 chips_output.setText(chips_slider.getValue())
@@ -119,7 +121,7 @@ class Game:
                 pygame_widgets.update(event)
                 
                 # saving values when returning to main menu
-                if self.back_button.draw(self.screen):
+                if self.back_button_1.draw(self.screen):
                     self.game_state = "main_menu"
                     self.player_num = player_slider.getValue()
                     self.starting_chips = chips_slider.getValue()
@@ -244,8 +246,7 @@ class Game:
                 # starting a new round on a key press [W] (should be changed to time based or a button)
                 
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5 and poker_game.dealer.players_status():
-                    key = pygame.key.get_pressed()
-                    if key[pygame.K_w] == True:
+                    if self.deal_button.draw(self.screen):
                         # remove npc player if they reach 0 chips
                         players_to_remove =[]
                         for player in poker_game.dealer.player_list:
@@ -273,11 +274,15 @@ class Game:
                             del player_bet_output
                             del poker_game
                             self.players = []
+                    
+                #back to main menu
+                if self.back_button_2.draw(self.screen):
+                    self.game_state = "main_menu"
+                    del player_bet_output
+                    del poker_game
+                    self.players = []
                          
-
-            # Time variables
-            self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
-            self.start_time = pygame.time.get_ticks()
+            self.delta_time = (pygame.time.get_ticks() - self.start_time)
             pygame_widgets.update(events)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
@@ -292,10 +297,13 @@ class Game:
         self.settings_img = pygame.image.load("menu_buttons/settings_button.png").convert_alpha()
         self.quit_img = pygame.image.load("menu_buttons/quit_button.png").convert_alpha()
         self.back_img = pygame.image.load("menu_buttons/back_button.png").convert_alpha()
-        self.start_button = Button(650, 300, self.start_img, 1)
-        self.settings_button = Button(650, 500, self.settings_img, 1)
-        self.quit_button = Button(650, 700, self.quit_img, 1)
-        self.back_button = Button(150, 700, self.back_img, 1)
+        self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
+        self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
+        self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
+        self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
+        self.back_img_2 = pygame.transform.scale_by(self.back_img, 0.8)
+        self.deal_img = pygame.image.load("menu_buttons/deal_button.png").convert_alpha()
+
     
     
     def create_buttons(self):
@@ -303,14 +311,16 @@ class Game:
         Creates button widgets for all actions in the game.
         """
         # loading player action buttons
-        self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
-        self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
-        self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
-        self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
+        self.start_button = Button(650, 300, self.start_img, 1)
+        self.settings_button = Button(650, 500, self.settings_img, 1)
+        self.quit_button = Button(650, 700, self.quit_img, 1)
+        self.back_button_1 = Button(150, 700, self.back_img, 1)
+        self.back_button_2 = Button(10, 820, self.back_img_2, 1)
         self.check_button = Button(1095, 840, self.check_img, 1)
         self.call_button = Button(1220, 840, self.call_img, 1)
         self.bet_button = Button(1345, 840, self.bet_img, 1)
         self.fold_button = Button(1470, 840, self.fold_img, 1)
+        self.deal_button = Button(10, 700, self.deal_img, 1)
     
 if __name__ == '__main__':
     game = Game()
