@@ -10,7 +10,6 @@ class Dealer:
         self.highest_bet = 0
         self.pot = 0
         self.small_blind = 1
-        self.small_blind_player = 0
         self.player_list = players
         self.player_count = len(self.player_list)
         self.num_active_players = len(self.player_list)
@@ -59,6 +58,11 @@ class Dealer:
         #checking if bets have changed and setting them
         self.get_highest_bet()
         self.set_player_bet_gaps()
+        # resets check status from other players
+        for play in self.player_list:
+            if play != player and not(play.fold) and not(play.all_in) and play.check:
+                play.reverse_check()
+
     
     # function for adding player matching bet to the pot
     def player_call(self, player):

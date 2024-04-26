@@ -5,10 +5,19 @@ class Poker:
     def __init__(self, players) :
         self.dealer = Dealer(players)
         self.turn = 0
+        self.start_turn = 0
         self.round_finished = False
         self.show_main_hand = False
         self.show_all_hands = False
+        self.blind = False
     
+    def toggle_blind(self):
+        self.blind = False
+    
+    def increment_button(self):
+        self.start_turn += 1
+        if self.start_turn == self.dealer.player_count:
+            self.start_turn = 0
 
     def pass_turn(self):
         self.turn += 1
@@ -23,6 +32,13 @@ class Poker:
             for card in self.dealer.player_list[0].hand:
                 card.show_card()
             self.show_main_hand = True
+
+        # blinds
+        if self.dealer.dealt_cards >= (self.dealer.player_count * 2) and self.blind == False:
+            self.dealer.player_bet(self.dealer.player_list[self.start_turn - 2 % self.dealer.player_count], self.dealer.small_blind)
+            self.dealer.player_bet(self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count], self.dealer.small_blind * 2)
+            self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count].reverse_check()
+            self.blind = True
 
         # NPC player actions
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
@@ -70,4 +86,5 @@ class Poker:
                         card.show_card()
             for winner in self.dealer.winners:
                 self.dealer.player_list[winner].add_chips(int(self.dealer.pot/len(self.dealer.winners)))
-            self.turn = 0
+            self.turn = self.start_turn
+        

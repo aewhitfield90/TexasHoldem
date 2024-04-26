@@ -99,7 +99,7 @@ class Game:
                     chips_slider = Slider(self.screen, 700, 407, 300, 40, min=200, max=10000, step=100, 
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
-                    player_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255))
+                    #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
 
 
                 # quit button
@@ -117,9 +117,9 @@ class Game:
                 player_output.setText(player_slider.getValue())
                 player_output.disable()
                 chips_output.setText(chips_slider.getValue())
-                chips_output.disable()
+                chips_output.disable()             
                 pygame_widgets.update(event)
-                
+
                 # saving values when returning to main menu
                 if self.back_button_1.draw(self.screen):
                     self.game_state = "main_menu"
@@ -144,6 +144,7 @@ class Game:
                         card.render_card(self.screen)
                     # pot
                     draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
+                    draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.start_turn], PLAYER_Y[poker_game.start_turn] - 10)
 
 
                 # Update the TextBox based on events
@@ -267,6 +268,8 @@ class Game:
                         
                         # restart table
                         poker_game.dealer.reset_table()
+                        poker_game.toggle_blind()
+                        poker_game.increment_button()
 
                         # quits game if player runs out of chips
                         if (poker_game.dealer.player_list[0].chips == 0):

@@ -36,6 +36,10 @@ class Player:
     def check_hand(self):
         self.check = True
     
+    def reverse_check(self):
+        if self.check == True:
+            self.check = False
+    
     def add_chips(self, winnings):
         self.chips += winnings
 
