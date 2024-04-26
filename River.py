@@ -7,11 +7,11 @@ class Dealer:
         self.deck = Deck()
         self.flop = False
         self.river = []
-        self.highest_bet = 0
         self.pot = 0
         self.small_blind = 1
         self.player_list = players
         self.player_count = len(self.player_list)
+        self.all_bets = [0] * self.player_count
         self.num_active_players = len(self.player_list)
         self.current_player_index = 0
         self.can_deal = True
@@ -47,9 +47,18 @@ class Dealer:
             bet_list.append(player.bet)
         self.highest_bet = max(bet_list)
 
+    def update_bets(self):
+        for i in range(len(self.player_list)):
+            self.all_bets[i] = self.player_list[i].total_bet
+
+        
     def set_player_bet_gaps(self):
         for player in self.player_list:
             player.bet_gap = self.highest_bet - player.bet
+
+    # sets small blind
+    def set_small_blind(self, ammount):
+        self.small_blind = ammount
 
     # adds bet_raise to the pot
     def player_bet(self, player, bet):
@@ -58,6 +67,7 @@ class Dealer:
         #checking if bets have changed and setting them
         self.get_highest_bet()
         self.set_player_bet_gaps()
+        self.update_bets()
         # resets check status from other players
         for play in self.player_list:
             if play != player and not(play.fold) and not(play.all_in) and play.check:
@@ -131,6 +141,11 @@ class Dealer:
                 winners_list.append(i)
         self.round_finished = True
         return winners_list
+
+    # pays winning amount to designated playyer and removes from pot
+    def pay_winnings(self, player, ammount):
+        player.add_chips(ammount)
+        self.pot -= ammount
 
     # function to get table back to starting point so a new round can be started
     def reset_table(self):

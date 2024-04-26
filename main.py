@@ -44,6 +44,7 @@ class Game:
         self.player_num = 5
         self.players = []
         self.starting_chips = 1000
+        self.small_blind = 1
         self.mouse_pos = pygame.mouse.get_pos()
         self.mouse = pygame.mouse.get_pressed()
         self.textbox_active = False
@@ -83,6 +84,7 @@ class Game:
                     for i in range (self.player_num - 1):
                         self.players.append(Player(NAME_LIST[i], self.starting_chips, True)) # True flag for NPC player
                     poker_game = Poker(self.players)
+                    poker_game.dealer.set_small_blind(self.small_blind)
 
                     # textbox for player betting
                     player_bet_output = TextBox(self.screen, 1490, 790, 80, 40, fontSize=20, colour=(255, 255, 255))
@@ -99,6 +101,9 @@ class Game:
                     chips_slider = Slider(self.screen, 700, 407, 300, 40, min=200, max=10000, step=100, 
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
+                    blind_slider = Slider(self.screen, 700, 607, 300, 40, min=1, max=300, step=1, 
+                                                colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
+                    blind_output = TextBox(self.screen, 1050, 602, 100, 50, fontSize=30, colour = (255,255,255))
                     #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
 
 
@@ -114,10 +119,13 @@ class Game:
                 draw_text(self.screen, "Number of Players", 36, TEXT_COLOR, 300, 300)
                 draw_text(self.screen, "Starting Chips", 36, TEXT_COLOR, 300, 400)
                 draw_text(self.screen, "Player Name", 36, TEXT_COLOR, 300, 500)
+                draw_text(self.screen, "Small Blind", 36, TEXT_COLOR, 300, 600)
                 player_output.setText(player_slider.getValue())
                 player_output.disable()
                 chips_output.setText(chips_slider.getValue())
-                chips_output.disable()             
+                chips_output.disable()
+                blind_output.setText(blind_slider.getValue())
+                blind_output.disable()             
                 pygame_widgets.update(event)
 
                 # saving values when returning to main menu
@@ -125,15 +133,18 @@ class Game:
                     self.game_state = "main_menu"
                     self.player_num = player_slider.getValue()
                     self.starting_chips = chips_slider.getValue()
+                    self.small_blind = blind_slider.getValue()
                     del player_slider
                     del player_output
                     del chips_slider
                     del chips_output
+                    del blind_slider
+                    del blind_output
 
             # in game
             if self.game_state == "in_game":
 
-                # printing player cards into screen
+                # printing player cards and info into screen
                 for i in range(poker_game.dealer.player_count):
                     # player names
                     draw_text(self.screen, poker_game.dealer.player_list[i].name, 24, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i])
@@ -144,7 +155,17 @@ class Game:
                         card.render_card(self.screen)
                     # pot
                     draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
-                    draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.start_turn], PLAYER_Y[poker_game.start_turn] - 10)
+                    draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.start_turn] - 80, PLAYER_Y[poker_game.start_turn] - 30)
+                    draw_text(self.screen, f"BET: {poker_game.dealer.player_list[i].total_bet}", 20, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i] + 60)
+                    if poker_game.dealer.player_list[i].all_in:
+                        draw_text(self.screen, "ALL IN", 32, (250,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].fold:
+                        draw_text(self.screen, "FOLDED", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].check:
+                        draw_text(self.screen, "CHECK", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    if poker_game.dealer.player_list[i].winner:
+                        draw_text(self.screen, "WINNER", 32, (0,0,0), PLAYER_X[i], PLAYER_Y[i] + 90)
+                    
 
 
                 # Update the TextBox based on events
@@ -244,9 +265,10 @@ class Game:
                 
                 poker_game.update()
 
-                # starting a new round on a key press [W] (should be changed to time based or a button)
+                # starting a new round on a button press
                 
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5 and poker_game.dealer.players_status():
+                    # prints deal cards button
                     if self.deal_button.draw(self.screen):
                         # remove npc player if they reach 0 chips
                         players_to_remove =[]
@@ -267,9 +289,9 @@ class Game:
                             poker_game.turn = 0
                         
                         # restart table
+                        poker_game.increment_button()
                         poker_game.dealer.reset_table()
                         poker_game.toggle_blind()
-                        poker_game.increment_button()
 
                         # quits game if player runs out of chips
                         if (poker_game.dealer.player_list[0].chips == 0):

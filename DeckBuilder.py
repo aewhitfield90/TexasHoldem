@@ -22,7 +22,7 @@ class Card:
             temp_image = self.card_img
         else:
             temp_image = self.back_img
-        image = pygame.transform.scale(temp_image, (120,120))
+        image = pygame.transform.scale(temp_image, (120,140))
         screen.blit(image, self.position)
     
     def show_card(self):
