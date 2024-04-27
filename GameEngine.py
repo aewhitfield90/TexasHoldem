@@ -23,14 +23,13 @@ class Poker:
             if self.all_in_trigger <= 0:
                 self.pass_turn()
             #print("player turn name: " + self.dealer.player_list[self.turn % self.dealer.player_count].name)
-            if self.all_in_trigger > 0:
-                if (self.dealer.player_list[0].all_in == True or self.dealer.player_list[0].fold == True):
-                            #print(self.turn % self.dealer.player_count)
-                            #print("entered PlayerNPC")
-                            arrayVal = (self.turn % self.dealer.player_count)
-                            PlayerNPC.PlayerNPC(self.dealer, arrayVal)
-                            self.all_in_trigger -= 1
-                            self.pass_turn()
+            if (self.all_in_trigger > 0 and self.dealer.player_list[0].all_in == True): #only enters if PLAYER attribute all_in is true
+                        #print(self.turn % self.dealer.player_count)
+                        #print("entered PlayerNPC")
+                        arrayVal = (self.turn % self.dealer.player_count)
+                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                        self.all_in_trigger -= 1
+                        self.pass_turn()
 
             elif (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and 
                   self.dealer.player_list[self.turn % self.dealer.player_count].check == False and 

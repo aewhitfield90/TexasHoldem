@@ -25,6 +25,7 @@ class PlayerNPC:
                     #highestHand = evaluate_cards(cards[0],cards[1])
                     if random.randrange(0,2) == 0: #pair or better
                         dealer.player_list[nameInList].all_in = True
+                        self.all_in_set_pot(dealer, nameInList)
                         print(dealer.player_list[nameInList].name + " went all in!")
                     else:
                         dealer.player_list[nameInList].fold = True
@@ -35,6 +36,7 @@ class PlayerNPC:
                     highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4])
                     if highestHand > 6185: #pair or better
                         dealer.player_list[nameInList].all_in = True
+                        self.all_in_set_pot(dealer, nameInList)
                         print(dealer.player_list[nameInList].name + " went all in!")
                     else:
                         dealer.player_list[nameInList].fold = True
@@ -44,6 +46,7 @@ class PlayerNPC:
                     highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5])
                     if highestHand > 3325: #pair or better
                         dealer.player_list[nameInList].all_in = True
+                        self.all_in_set_pot(dealer, nameInList)
                         print(dealer.player_list[nameInList].name + " went all in!")
                     else:
                         dealer.player_list[nameInList].fold = True
@@ -53,6 +56,7 @@ class PlayerNPC:
                     highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5],cards[6])
                     if highestHand > 6185: #pair or better
                         dealer.player_list[nameInList].all_in = True
+                        self.all_in_set_pot(dealer, nameInList)
                         print(dealer.player_list[nameInList].name + " went all in!")
                     else:
                         dealer.player_list[nameInList].fold = True
@@ -63,5 +67,12 @@ class PlayerNPC:
 
         else:
             return
-        
+
+    def all_in_set_pot(self, dealer, nameInList):
+        if dealer.player_list[0].bet <= dealer.player_list[nameInList].chips: #if player bets all in with lower or equal chip value, NPC does bet raise of that amount
+            dealer.player_list[nameInList].bet_raise(dealer.player_list[0].bet)
+            dealer.pot += dealer.player_list[0].bet
+        else:
+            dealer.player_list[nameInList].bet_raise(dealer.player_list[nameInList].chips) # if player has larger chip amount than NPC, NPC bets rest of chips it has
+            dealer.pot += dealer.player_list[nameInList].chips
                 
