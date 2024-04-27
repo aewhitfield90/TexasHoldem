@@ -106,7 +106,11 @@ class Game:
                     blind_output = TextBox(self.screen, 1050, 602, 100, 50, fontSize=30, colour = (255,255,255))
                     #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
 
+                # high scores button
+                if self.high_scores_button.draw(self.screen):
+                    self.game_state = "high_scores"
 
+                
                 # quit button
                 if self.quit_button.draw(self.screen):
                     pygame.quit()
@@ -140,6 +144,12 @@ class Game:
                     del chips_output
                     del blind_slider
                     del blind_output
+            
+            # high scores
+            if self.game_state == "high_scores":
+                draw_text(self.screen, "HIGH SCORES", 72, TEXT_COLOR, 550, 100)
+                if self.back_button_1.draw(self.screen):
+                    self.game_state = "main_menu"
 
             # in game
             if self.game_state == "in_game":
@@ -321,6 +331,7 @@ class Game:
         self.start_img = pygame.image.load("menu_buttons/start_button.png").convert_alpha()
         self.settings_img = pygame.image.load("menu_buttons/settings_button.png").convert_alpha()
         self.quit_img = pygame.image.load("menu_buttons/quit_button.png").convert_alpha()
+        self.high_scores_img = pygame.image.load("menu_buttons/high_scores_button.png").convert_alpha()
         self.back_img = pygame.image.load("menu_buttons/back_button.png").convert_alpha()
         self.check_img = pygame.image.load("menu_buttons/check_button.png").convert_alpha()
         self.call_img = pygame.image.load("menu_buttons/call_button.png").convert_alpha()
@@ -339,6 +350,7 @@ class Game:
         self.start_button = Button(650, 300, self.start_img, 1)
         self.settings_button = Button(650, 500, self.settings_img, 1)
         self.quit_button = Button(650, 700, self.quit_img, 1)
+        self.high_scores_button = Button(300, 500, self.high_scores_img, 1)
         self.back_button_1 = Button(150, 700, self.back_img, 1)
         self.back_button_2 = Button(10, 820, self.back_img_2, 1)
         self.check_button = Button(1095, 840, self.check_img, 1)
