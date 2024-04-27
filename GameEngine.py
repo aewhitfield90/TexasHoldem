@@ -65,10 +65,6 @@ class Poker:
                         self.pass_turn()
                     self.pass_turn()
 
-                else:
-                    self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count]) #if there is a bet gap, NPC will CALL
-                    self.pass_turn()
-
         # check if all player cards have been dealt before flop
         if self.dealer.dealt_cards == (self.dealer.player_count * 2) and (self.dealer.flop == False) and self.dealer.players_status(): # checks cards are dealt, flop hasnt happened, and if all player classes have CHECKED
             self.dealer.deal_flop()
