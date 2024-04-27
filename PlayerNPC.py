@@ -79,8 +79,7 @@ class PlayerNPC:
                     if random.randrange(0,2) == 0: #if cards arent a pair randomly decides to check or raise
                         dealer.player_call(dealer.player_list[nameInList])
                     else:
-                        dealer.player_list[nameInList].bet_raise(25)
-                        dealer.pot += dealer.player_list[nameInList].bet
+                        dealer.player_bet(dealer.player_list[nameInList], 50)
 
             elif len(cards) == 5:
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4])
@@ -91,7 +90,7 @@ class PlayerNPC:
                 elif highestHand >= 1610:
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 6:
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5])
                 if highestHand >= 6185 and highestHand <= 3326: #if a pair, check
@@ -101,7 +100,7 @@ class PlayerNPC:
                 elif highestHand >= 1610:
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 7:
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5],cards[6])
                 if highestHand >= 6185 and highestHand <= 3326: #if a pair, check
@@ -111,7 +110,7 @@ class PlayerNPC:
                 elif highestHand >= 1610:
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             else:
                 print("the river plus the hand does not equal 2, 5, 6, or 7")
         elif dealer.player_list[nameInList].bet_gap != 0: #when player has increased bet
@@ -134,7 +133,7 @@ class PlayerNPC:
                 elif highestHand >= 1610: #higher than triple, raise
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 6:
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5])
                 if highestHand >= 6185 and highestHand <= 3326: #pair, check
@@ -144,7 +143,7 @@ class PlayerNPC:
                 elif highestHand >= 1610:
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 7:
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5],cards[6])
                 if highestHand >= 6185 and highestHand <= 3326: #pair, check
@@ -154,7 +153,7 @@ class PlayerNPC:
                 elif highestHand >= 1610:#higher than triple, raise
                     dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
-                    dealer.player_list[nameInList].fold = True
+                    dealer.player_list[nameInList].fold_hand()
             else:
                 print("the river plus the hand does not equal 2, 5, 6, or 7")
 
