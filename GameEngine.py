@@ -1,5 +1,6 @@
 #GameEngine
 from River import Dealer
+import PlayerNPC
 import pygame
 
 class Poker:
@@ -8,6 +9,7 @@ class Poker:
         self.turn = 0
         self.start_turn = 0
         self.round_finished = False
+        self.all_in_trigger = 4
         self.show_main_hand = False
         self.show_all_hands = False
         self.blind = False
@@ -46,22 +48,52 @@ class Poker:
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
             if self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time == 0:
                 self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time >= 100: # wait time for NPCs actions
-                if (self.dealer.player_list[self.turn % self.dealer.player_count].all_in == True or 
-                    self.dealer.player_list[self.turn % self.dealer.player_count].fold == True): #if player selects ALL IN or FOLD pass turn
-                        
-                        self.pass_turn()
-
-
-                if (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and 
-                    self.dealer.player_list[self.turn % self.dealer.player_count].check == False):
-                    
-                    if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0:  #if there is no difference in NPC bet amount and Real Player bet amount, NPC CHECKS there own hand
-                        self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
+            if pygame.time.get_ticks() - self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time >= 100:
+                if self.all_in_trigger <= 0:
+                    self.pass_turn()
+                print("player turn name: " + self.dealer.player_list[self.turn % self.dealer.player_count].name)
+                print(self.dealer.player_list[self.turn % self.dealer.player_count].NPC)
+                print(self.dealer.player_list[self.turn % self.dealer.player_count].check)
+                if (self.all_in_trigger > 0 and self.dealer.player_list[0].all_in == True): #only enters if PLAYER attribute all_in is true
+                            #print(self.turn % self.dealer.player_count)
+                            print("entered All in trigger")
+                            arrayVal = (self.turn % self.dealer.player_count)
+                            PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                            self.all_in_trigger -= 1
+                            
+                            self.pass_turn()
+                            
+                elif (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and #enters if NPC, NPC has not checked
+                    self.dealer.player_list[self.turn % self.dealer.player_count].check == False): #and 
+                    #self.dealer.player_list[self.turn % self.dealer.player_count].all_in != True and 
+                    #self.dealer.player_list[self.turn % self.dealer.player_count].fold != True):
+                    if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #enters if player checked
+                        arrayVal = (self.turn % self.dealer.player_count)
+                        print("entered if player checked")
+                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                        #self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
                         self.pass_turn()
 
                     else:
-                        self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count])
+                        #self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count]) #if there is a bet gap, NPC will CALL
+                        print("entered bet_gap")
+                        arrayVal = (self.turn % self.dealer.player_count)
+                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                        self.pass_turn()
+                elif (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and #enters if NPC, NPC has checked
+                    self.dealer.player_list[self.turn % self.dealer.player_count].check == True):
+                    if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #enters if player checked
+                        arrayVal = (self.turn % self.dealer.player_count)
+                        print("entered if player checked")
+                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                        #self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
+                        self.pass_turn()
+
+                    else:
+                        #self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count]) #if there is a bet gap, NPC will CALL
+                        print("entered bet_gap")
+                        arrayVal = (self.turn % self.dealer.player_count)
+                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
                         self.pass_turn()
 
         # check if all player cards have been dealt before flop

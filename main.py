@@ -248,6 +248,9 @@ class Game:
                                 player_bet_output.setText('')  # Reset TextBox input
                             else:
                                 # Process the bet
+                                if bet_amount == poker_game.dealer.player_list[0].chips:
+                                    print("all in changed")
+                                    poker_game.dealer.player_list[0].all_in = True
                                 poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
                                 player_bet_output.setText(str(bet_amount))
                                 if poker_game.dealer.player_list[0].check == True:
