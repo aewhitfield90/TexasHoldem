@@ -65,9 +65,10 @@ class PlayerNPC:
                 else:
                     print("the river plus the hand does not equal 2, 5, 6, or 7")
                 dealer.player_list[nameInList].check = True
-        elif dealer.player_list[0].bet == 0: #when player has checked
+        elif dealer.player_list[0].check == True: #when player has checked
             print("entered if Player Checks")
             if len(cards) == 2: #decides to check, raise or fold pre-flop
+                    print("entered Player checks, 2 card hand (pre flop)")
                 #if random.randrange(0,2) == 0: #randomly decides to check
                 #if card[0].rank == card[1].rank: #if NPC has a starting pair
                 #    if random.randrange(0,2) == 0: #randomly decides to check or raise
@@ -76,39 +77,49 @@ class PlayerNPC:
                 #        dealer.player_list[nameInList].bet_raise(50)
                 #        dealer.pot += dealer.player_list[nameInList].bet
                 #else:
-                    if random.randrange(0,2) == 0: #if cards arent a pair randomly decides to check or raise
-                        dealer.player_call(dealer.player_list[nameInList])
-                    else:
-                        dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
+                    #if random.randrange(0,10) == 0: #if cards arent a pair randomly decides to check or raise
+                    #    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    #else:
+                    #    dealer.player_call(dealer.player_list[nameInList])
 
             elif len(cards) == 5:
+                print("entered Player checks, 5 card hand")
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4])
                 if highestHand >= 6185 and highestHand <= 3326: #if flop gives a pair, check
                     dealer.player_call(dealer.player_list[nameInList])
                 elif highestHand >= 3325 and highestHand <= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 50)
                 elif highestHand >= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 6:
+                print("entered Player checks, 6 card hand")
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5])
                 if highestHand >= 6185 and highestHand <= 3326: #if a pair, check
                     dealer.player_call(dealer.player_list[nameInList])
                 elif highestHand >= 3325 and highestHand <= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 50)
                 elif highestHand >= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 7:
+                print("entered Player checks, 7 card hand")
                 highestHand = evaluate_cards(cards[0],cards[1],cards[2],cards[3],cards[4],cards[5],cards[6])
                 if highestHand >= 6185 and highestHand <= 3326: #if a pair, check
                     dealer.player_list[nameInList].check = True
                 elif highestHand >= 3325 and highestHand <= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 50)
                 elif highestHand >= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
+                    #dealer.player_bet(dealer.player_list[nameInList], 100)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             else:
@@ -120,7 +131,7 @@ class PlayerNPC:
                 if rand > 1: #50% chance to check
                     dealer.player_call(dealer.player_list[nameInList]) #calls amount of gap
                 elif rand == 1: #25% chance to bet
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
                 else: #25% chance to fold
                     dealer.player_list[nameInList].fold_hand()
 
@@ -129,9 +140,9 @@ class PlayerNPC:
                 if highestHand >= 6185 and highestHand <= 3326: #pair, check
                     dealer.player_call(dealer.player_list[nameInList])
                 elif highestHand >= 3325 and highestHand <= 1610: #triple, raise
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
                 elif highestHand >= 1610: #higher than triple, raise
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 6:
@@ -139,9 +150,9 @@ class PlayerNPC:
                 if highestHand >= 6185 and highestHand <= 3326: #pair, check
                     dealer.player_call(dealer.player_list[nameInList])
                 elif highestHand >= 3325 and highestHand <= 1610:#triple, raise
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
                 elif highestHand >= 1610:
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             elif len(cards) == 7:
@@ -149,9 +160,9 @@ class PlayerNPC:
                 if highestHand >= 6185 and highestHand <= 3326: #pair, check
                     dealer.player_call(dealer.player_list[nameInList])
                 elif highestHand >= 3325 and highestHand <= 1610:#triple, raise
-                    dealer.player_bet(dealer.player_list[nameInList], 50)
+                    self.chance_to_raise(dealer, nameInList)
                 elif highestHand >= 1610:#higher than triple, raise
-                    dealer.player_bet(dealer.player_list[nameInList], 100)
+                    self.chance_to_raise(dealer, nameInList)
                 else:
                     dealer.player_list[nameInList].fold_hand()
             else:
@@ -168,3 +179,8 @@ class PlayerNPC:
             dealer.player_list[nameInList].bet_raise(dealer.player_list[nameInList].chips) # if player has larger chip amount than NPC, NPC bets rest of chips it has
             dealer.pot += dealer.player_list[nameInList].chips
                 
+    def chance_to_raise(self, dealer, nameInList):
+        if random.randrange(0,10) == 0: #if cards arent a pair randomly decides to check or raise
+            dealer.player_bet(dealer.player_list[nameInList], 50)
+        else:
+            dealer.player_call(dealer.player_list[nameInList])
