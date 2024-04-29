@@ -28,12 +28,13 @@ class Poker:
                     self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count])
                     self.pass_turn()
 
-        # check if all player cards have been dealt before flop
+        # Deal the flop if all player cards have been dealt and all players are ready
         if self.dealer.dealt_cards == (self.dealer.player_count * 2) and (self.dealer.flop == False) and self.dealer.players_status():
             self.dealer.deal_flop()
             for player in self.dealer.player_list:
                 player.reset_turn()
         
+        """Removed in favor of splitting the function into two separate functions
         # deal extra cards to river
         if self.dealer.flop == True and self.dealer.can_deal == True and self.dealer.players_status():
             self.dealer.deal_after_flop()
@@ -41,9 +42,21 @@ class Poker:
                 player.reset_turn()
             if self.dealer.dealt_cards == (self.dealer.player_count * 2) + 5:
                 self.dealer.can_deal  = False
+        """
+        # Deal the turn card
+        if len(self.dealer.river) == 3 and self.dealer.players_status():  # Checks if flop has been dealt and all players are ready
+            self.dealer.deal_turn()
+            for player in self.dealer.player_list:
+                player.reset_turn()
 
-        # finish the round
-        if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)) and self.dealer.players_status():
+        # Deal the river card
+        if len(self.dealer.river) == 4 and self.dealer.players_status():  # Checks if turn has been dealt and all players are ready
+            self.dealer.deal_river()
+            for player in self.dealer.player_list:
+                player.reset_turn()    
+
+        # Finish the round
+        if not self.dealer.can_deal and len(self.dealer.winners) < 1 and self.dealer.players_status():
             for player in self.dealer.player_list:
                 player.reset_turn()
             self.dealer.winners = self.dealer.decide_winner()
