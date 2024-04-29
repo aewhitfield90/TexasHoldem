@@ -17,7 +17,7 @@ class Card:
         self.suit = suit
         self.rank = rank
         self.load_images = load_images
-        self.show = True   # Determines if the card's face is shown or the back
+        self.show = False   # Determines if the card's face is shown or the back
         self.position = (500, 500)   # Default position on the screen 
         self.id = f"{self.rank}{self.suit}"   # Unique identifier for the card
         
@@ -39,10 +39,12 @@ class Card:
             temp_image = self.back_img
         image = pygame.transform.scale(temp_image, (120,120))   # Scale the card image
         screen.blit(image, self.position)  # Draw the image at the card's position
-
-    def flip(self):
-        """ Toggle the display state between face and back of the card. """
-        self.show = not self.show    
+    
+    def show_card(self):
+        self.show = True
+    
+    def hide_card(self):
+        self.show = False
 
 class Deck:
     """ Represents a deck of playing cards. """

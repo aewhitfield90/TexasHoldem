@@ -38,12 +38,11 @@ class Dealer:
         self.logger = GameLogger()  # Initialize the logger
         self.flop = False
         self.river = []
-        self.highest_bet = 0
         self.pot = 0
         self.small_blind = 1
-        self.small_blind_player = 0
         self.player_list = players
         self.player_count = len(self.player_list)
+        self.all_bets = [0] * self.player_count
         self.num_active_players = len(self.player_list)
         self.current_player_index = 0
         self.can_deal = True
@@ -57,14 +56,20 @@ class Dealer:
         """ Adds a new player to the game table if the maximum player limit has not been reached."""
         if self.player_count < MAX_PLAYERS:
             self.player_list.append(player)
+            self.player_count = len(self.player_list)
         else:
             print("Cannot Add Player")
     
     def remove_player(self, player_name):
         """ Removes a player from the game table based on the player's name."""
-        original_count = len(self.player_list)
-        self.player_list = [player for player in self.player_list if player.name != player_name]
-        if len(self.player_list) == original_count:
+        removed = False
+        for player in self.player_list:
+            if player.name == player_name:
+                self.player_list.remove(player)
+                del player
+                removed = True
+                self.player_count = len(self.player_list)
+        if removed == False:
             print("Player Not Found.")
     
     def get_highest_bet(self):
@@ -74,11 +79,22 @@ class Dealer:
             bet_list.append(player.bet)
         self.highest_bet = max(bet_list)
 
+    def update_bets(self):
+        for i in range(len(self.player_list)):
+            self.all_bets[i] = self.player_list[i].total_bet
+
+        
     def set_player_bet_gaps(self):
         """ Updates each player's bet gap based on the highest bet."""
         for player in self.player_list:
             player.bet_gap = self.highest_bet - player.bet
 
+
+    # sets small blind
+    def set_small_blind(self, amount):
+        self.small_blind = amount
+
+    # adds bet_raise to the pot
     def player_bet(self, player, bet):
         """
         Processes a player's bet, adds the bet to the pot, and updates bet statuses.
@@ -95,6 +111,12 @@ class Dealer:
         #checking if bets have changed and setting them
         self.get_highest_bet()
         self.set_player_bet_gaps()
+        self.update_bets()
+        # resets check status from other players
+        for play in self.player_list:
+            if play != player and not(play.fold) and not(play.all_in) and play.check:
+                play.reverse_check()
+
     
     # function for adding player matching bet to the pot
     def player_call(self, player):
@@ -192,13 +214,26 @@ class Dealer:
         self.round_finished = True
         return winners_list
 
+    # pays winning amount to designated playyer and removes from pot
+    def pay_winnings(self, player, ammount):
+        player.add_chips(ammount)
+        self.pot -= ammount
+
+    # function to get table back to starting point so a new round can be started
     def reset_table(self):
         """Resets the table and all players for a new round."""
         for player in self.player_list:
             for _ in range(len(player.hand)):
-                self.deck.deck.append(player.hand.pop())
+                card = player.hand.pop()
+                card.hide_card()
+                self.deck.deck.append(card)
+            player.reset_round()
         for _ in range(len(self.river)):
-            self.deck.deck.append(self.river.pop())
+            card = self.river.pop()
+            card.hide_card()
+            self.deck.deck.append(card)
+        #for card in self.deck:
+        #    card.hide_card()
 
         self.winners = []
         self.deck.shuffle_deck()
