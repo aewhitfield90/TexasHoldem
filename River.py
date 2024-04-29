@@ -145,6 +145,24 @@ class Dealer:
                 #print(self.dealt_cards)
                 self.can_deal = False
 
+    def deal_turn(self):
+        """Deals the fourth community card (turn)."""
+        if len(self.river) == 3:  # Ensures the turn is dealt after the flop
+            new_card = self.deck.deal_card()
+            new_card.position = (RIVER_X[3], RIVER_Y)
+            self.river.append(new_card)
+            self.dealt_cards += 1
+
+    def deal_river(self):
+        """Deals the fifth community card (river)."""
+        if len(self.river) == 4:  # Ensures the river is dealt after the turn
+            new_card = self.deck.deal_card()
+            new_card.position = (RIVER_X[4], RIVER_Y)
+            self.river.append(new_card)
+            self.dealt_cards += 1
+            self.can_deal = False
+
+
     def decide_winner(self):
         """
         Evaluates all players' hands to determine the winner(s) of the round by 
