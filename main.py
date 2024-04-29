@@ -102,7 +102,7 @@ class Game:
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
                     blind_slider = Slider(self.screen, 700, 607, 300, 40, min=1, max=300, step=1, 
-                                                colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
+                                                colour = (255,255,255) , handleRadius = 25, initial = 1)
                     blind_output = TextBox(self.screen, 1050, 602, 100, 50, fontSize=30, colour = (255,255,255))
                     #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
 
@@ -171,10 +171,14 @@ class Game:
                         draw_text(self.screen, "ALL IN", 32, (250,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
                     elif poker_game.dealer.player_list[i].fold:
                         draw_text(self.screen, "FOLDED", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].has_called:
+                        draw_text(self.screen, "CALL", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].has_bet:
+                        draw_text(self.screen, f"BET + {poker_game.dealer.player_list[i].bet}", 20, (0,0,230), PLAYER_X[i], PLAYER_Y[i] - 30)
                     elif poker_game.dealer.player_list[i].check:
                         draw_text(self.screen, "CHECK", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
                     if poker_game.dealer.player_list[i].winner:
-                        draw_text(self.screen, "WINNER", 32, (0,0,0), PLAYER_X[i], PLAYER_Y[i] + 90)
+                        draw_text(self.screen, "WINNER", 32, (0,0,0), PLAYER_X[i] - 15, PLAYER_Y[i] - 220)
                     
 
 
@@ -224,7 +228,7 @@ class Game:
                 if self.call_button.draw(self.screen):
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         if poker_game.dealer.player_list[0].chips >= poker_game.dealer.player_list[0].bet_gap:
-                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], poker_game.dealer.player_list[0].bet_gap)
+                            poker_game.dealer.player_call(poker_game.dealer.player_list[0])
                         else:
                             poker_game.dealer.player_list[0].bet_raise(poker_game.dealer.player_list[0].chips)
 

@@ -31,14 +31,9 @@ class Dealer:
     
     # removes existing player from the table
     def remove_player(self, player_name):
-        removed = False
-        for player in self.player_list:
-            if player.name == player_name:
-                self.player_list.remove(player)
-                del player
-                removed = True
-                self.player_count = len(self.player_list)
-        if removed == False:
+        original_count = len(self.player_list)
+        self.player_list = [player for player in self.player_list if player.name != player_name]
+        if len(self.player_list) == original_count:
             print("Player Not Found.")
     
     def get_highest_bet(self):
@@ -116,7 +111,6 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
             if self.dealt_cards == (self.player_count * 2) + 5:
-                #print(self.dealt_cards)
                 self.can_deal = False
 
     # uses the pheavluator library to calculate poker hands by rank
