@@ -104,7 +104,7 @@ class Game:
                     blind_slider = Slider(self.screen, 700, 607, 300, 40, min=1, max=300, step=1, 
                                                 colour = (255,255,255) , handleRadius = 25, initial = 1)
                     blind_output = TextBox(self.screen, 1050, 602, 100, 50, fontSize=30, colour = (255,255,255))
-                    #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
+                    player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255))
 
                 # high scores button
                 if self.high_scores_button.draw(self.screen):
@@ -129,8 +129,9 @@ class Game:
                 chips_output.setText(chips_slider.getValue())
                 chips_output.disable()
                 blind_output.setText(blind_slider.getValue())
-                blind_output.disable()             
-                pygame_widgets.update(event)
+                blind_output.disable()
+                self.player_name = player_name_output.getText()
+
 
                 # saving values when returning to main menu
                 if self.back_button_1.draw(self.screen):
@@ -144,6 +145,7 @@ class Game:
                     del chips_output
                     del blind_slider
                     del blind_output
+                    del player_name_output
             
             # high scores
             if self.game_state == "high_scores":
@@ -241,7 +243,7 @@ class Game:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-                            min_bet = 15
+                            min_bet = 1
                             max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
 
                             if bet_amount > max_bet:
@@ -328,7 +330,6 @@ class Game:
             pygame_widgets.update(events)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
-
             self.clock.tick(FPS)
 
     def load_images(self):
