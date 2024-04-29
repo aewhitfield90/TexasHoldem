@@ -1,5 +1,5 @@
 from settings import *
-import ctypes, pygame, sys, pygame_widgets, pygame_textinput
+import ctypes, pygame, sys, pygame_widgets, random
 from GameEngine import Poker
 from Player import Player
 from Tools import *
@@ -81,8 +81,8 @@ class Game:
                     self.players.append(Player(self.player_name, self.starting_chips))
 
                     # creating table with players
-                    for i in range (self.player_num - 1):
-                        self.players.append(Player(NAME_LIST[i], self.starting_chips, True)) # True flag for NPC player
+                    for _ in range (self.player_num - 1):
+                        self.players.append(Player(NAME_LIST[random.randint(0, 21)], self.starting_chips, True)) # True flag for NPC player
                     poker_game = Poker(self.players)
                     poker_game.dealer.set_small_blind(self.small_blind)
 
@@ -102,9 +102,9 @@ class Game:
                                                 colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
                     chips_output = TextBox(self.screen, 1050, 402, 100, 50, fontSize=30, colour = (255,255,255))
                     blind_slider = Slider(self.screen, 700, 607, 300, 40, min=1, max=300, step=1, 
-                                                colour = (255,255,255) , handleRadius = 25, initial = self.starting_chips)
+                                                colour = (255,255,255) , handleRadius = 25, initial = 1)
                     blind_output = TextBox(self.screen, 1050, 602, 100, 50, fontSize=30, colour = (255,255,255))
-                    #player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255), onSubmit=self.player_name)
+                    player_name_output = TextBox(self.screen, 680, 502, 400, 50, fontSize=30, colour = (255,255,255))
 
                 # high scores button
                 if self.high_scores_button.draw(self.screen):
@@ -129,8 +129,9 @@ class Game:
                 chips_output.setText(chips_slider.getValue())
                 chips_output.disable()
                 blind_output.setText(blind_slider.getValue())
-                blind_output.disable()             
-                pygame_widgets.update(event)
+                blind_output.disable()
+                self.player_name = player_name_output.getText()
+
 
                 # saving values when returning to main menu
                 if self.back_button_1.draw(self.screen):
@@ -144,6 +145,7 @@ class Game:
                     del chips_output
                     del blind_slider
                     del blind_output
+                    del player_name_output
             
             # high scores
             if self.game_state == "high_scores":
@@ -171,10 +173,14 @@ class Game:
                         draw_text(self.screen, "ALL IN", 32, (250,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
                     elif poker_game.dealer.player_list[i].fold:
                         draw_text(self.screen, "FOLDED", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].has_called:
+                        draw_text(self.screen, "CALL", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
+                    elif poker_game.dealer.player_list[i].has_bet:
+                        draw_text(self.screen, f"BET + {poker_game.dealer.player_list[i].bet}", 20, (0,0,230), PLAYER_X[i], PLAYER_Y[i] - 30)
                     elif poker_game.dealer.player_list[i].check:
                         draw_text(self.screen, "CHECK", 20, (0,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
                     if poker_game.dealer.player_list[i].winner:
-                        draw_text(self.screen, "WINNER", 32, (0,0,0), PLAYER_X[i], PLAYER_Y[i] + 90)
+                        draw_text(self.screen, "WINNER", 32, (0,0,0), PLAYER_X[i] - 15, PLAYER_Y[i] - 220)
                     
 
 
@@ -224,7 +230,7 @@ class Game:
                 if self.call_button.draw(self.screen):
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         if poker_game.dealer.player_list[0].chips >= poker_game.dealer.player_list[0].bet_gap:
-                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], poker_game.dealer.player_list[0].bet_gap)
+                            poker_game.dealer.player_call(poker_game.dealer.player_list[0])
                         else:
                             poker_game.dealer.player_list[0].bet_raise(poker_game.dealer.player_list[0].chips)
 
@@ -237,7 +243,7 @@ class Game:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-                            min_bet = 15
+                            min_bet = 1
                             max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
 
                             if bet_amount > max_bet:
@@ -324,7 +330,6 @@ class Game:
             pygame_widgets.update(events)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
-
             self.clock.tick(FPS)
 
     def load_images(self):

@@ -164,7 +164,6 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
             if self.dealt_cards == (self.player_count * 2) + 5:
-                #print(self.dealt_cards)
                 self.can_deal = False
 
     def deal_turn(self):

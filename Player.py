@@ -35,6 +35,8 @@ class Player:
         self.fold = False
         self.check = False
         self.all_in = False
+        self.has_bet = False
+        self.has_called = False
         self.hand_rank = 9999
         self.winner = False
         #variables to delay npc actions
@@ -65,6 +67,7 @@ class Player:
         self.bet += amount
         self.total_bet += amount
         self.chips -= amount
+        self.has_bet = True
         self.check = True
         if self.chips == 0:
             self.all_in = True
@@ -79,6 +82,7 @@ class Player:
         self.bet_gap = gap
     
     def call_hand(self):
+        self.has_called = True
         """ Executes a call action, matching the current highest bet by betting the bet gap."""
         self.bet_raise(self.bet_gap)
 
@@ -123,6 +127,8 @@ class Player:
         self.bet = 0
         self.bet_gap = 0
         self.can_act = False
+        self.has_bet = False
+        self.has_called = False
         self.last_act_time = 0
         if self.all_in == False and self.fold == False:
             self.check = False
