@@ -48,7 +48,7 @@ class Poker:
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
             if self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time == 0:
                 self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time >= 1000:
+            if pygame.time.get_ticks() - self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time >= 10:
                 if self.all_in_trigger <= 0:
                     self.pass_turn()
                 print("player turn name: " + self.dealer.player_list[self.turn % self.dealer.player_count].name)
@@ -130,6 +130,7 @@ class Poker:
         # Deal the river card
         if len(self.dealer.river) == 4 and self.dealer.players_status():  # Checks if turn has been dealt and all players are ready
             self.dealer.deal_river()
+            self.dealer.river[4].show_card()
             for player in self.dealer.player_list:
                 player.reset_turn()    
             self.turn = self.start_turn
