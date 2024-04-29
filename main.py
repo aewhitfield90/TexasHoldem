@@ -1,5 +1,5 @@
 from settings import *
-import ctypes, pygame, sys, pygame_widgets, pygame_textinput
+import ctypes, pygame, sys, pygame_widgets, random
 from GameEngine import Poker
 from Player import Player
 from Tools import *
@@ -81,8 +81,8 @@ class Game:
                     self.players.append(Player(self.player_name, self.starting_chips))
 
                     # creating table with players
-                    for i in range (self.player_num - 1):
-                        self.players.append(Player(NAME_LIST[i], self.starting_chips, True)) # True flag for NPC player
+                    for _ in range (self.player_num - 1):
+                        self.players.append(Player(NAME_LIST[random.randint(0, 21)], self.starting_chips, True)) # True flag for NPC player
                     poker_game = Poker(self.players)
                     poker_game.dealer.set_small_blind(self.small_blind)
 
