@@ -51,7 +51,7 @@ class Dealer:
         self.winners = []
         self.round_finished = False
         self.button = 0 #person located after the blinds and the one who starts the rounds
-        self.game_stage = "Pre-Flop" # Initialize the game stage
+        self.game_stage = "Setup" # Initialize the game stage
 
     def add_player(self, player):
         """ Adds a new player to the game table if the maximum player limit has not been reached."""
@@ -135,6 +135,7 @@ class Dealer:
                 new_card.position = CARDS_2[self.dealt_cards - self.player_count]
             player.hand.append(new_card)
             self.dealt_cards += 1
+        self.game_stage = "Pre-Flop"
     
     # Function to check if players have concluded their turns
     def players_status(self):
