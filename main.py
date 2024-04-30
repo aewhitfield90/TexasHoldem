@@ -169,6 +169,8 @@ class Game:
                     draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
                     draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.start_turn] - 80, PLAYER_Y[poker_game.start_turn] - 30)
                     draw_text(self.screen, f"BET: {poker_game.dealer.player_list[i].total_bet}", 20, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i] + 60)
+                    draw_text(self.screen, poker_game.dealer.get_current_stage(), 40, (255,255,10), 20, 650)
+                    draw_text(self.screen, "TURN", 18, (255,0,0), PLAYER_X[poker_game.turn % poker_game.dealer.player_count] - 80, PLAYER_Y[poker_game.turn % poker_game.dealer.player_count] - 50)
                     if poker_game.dealer.player_list[i].all_in:
                         draw_text(self.screen, "ALL IN", 32, (250,0,0), PLAYER_X[i], PLAYER_Y[i] - 30)
                     elif poker_game.dealer.player_list[i].fold:
@@ -218,13 +220,14 @@ class Game:
 
                 # player actions
                 # check
-                if self.check_button.draw(self.screen):
-                    if ((poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].bet_gap == 0 
-                                                                                and poker_game.dealer.player_list[0].check == False):
-                        poker_game.dealer.player_list[0].check_hand()
-                        
-                        if(poker_game.dealer.player_list[0].check == True):
-                            poker_game.pass_turn()
+                if poker_game.dealer.player_list[0].bet_gap == 0:
+                    if self.check_button.draw(self.screen):
+                        if ((poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].bet_gap == 0 
+                                                                                    and poker_game.dealer.player_list[0].check == False):
+                            poker_game.dealer.player_list[0].check_hand()
+                            
+                            if(poker_game.dealer.player_list[0].check == True):
+                                poker_game.pass_turn()
                     
                 # call
                 if self.call_button.draw(self.screen):
