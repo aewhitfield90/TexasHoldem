@@ -1,7 +1,10 @@
 #GameEngine
 from River import Dealer
+from phevaluator.evaluator import evaluate_cards
 import PlayerNPC
 import pygame
+import random
+from settings import *
 
 class Poker:
     def __init__(self, players) :
@@ -19,7 +22,7 @@ class Poker:
     
     def increment_button(self):
         self.start_turn += 1
-        if self.start_turn == self.dealer.player_count:
+        if self.start_turn >= len(self.dealer.player_list):
             self.start_turn = 0
         self.turn = self.start_turn
 
@@ -45,58 +48,125 @@ class Poker:
             self.blind = True
 
         # NPC player actions
-        if self.dealer.dealt_cards >= (self.dealer.player_count * 2): #if dealtcards >= players*2, enters this once all cards have been dealt
-            if self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time == 0:
-                self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - self.dealer.player_list[self.turn % self.dealer.player_count].last_act_time >= 10:
-                if self.all_in_trigger <= 0:
+        if self.dealer.dealt_cards >= (self.dealer.player_count * 2):
+            player = self.dealer.player_list[self.turn % self.dealer.player_count]
+            if player.last_act_time == 0 and player.NPC == True:
+                player.last_act_time = pygame.time.get_ticks()
+            if pygame.time.get_ticks() - player.last_act_time >= 100 or player.all_in == True or player.fold == True:
+                if (player.all_in == True or player.fold == True):                  
                     self.pass_turn()
-                print("player turn name: " + self.dealer.player_list[self.turn % self.dealer.player_count].name)
-                print(self.dealer.player_list[self.turn % self.dealer.player_count].NPC)
-                print(self.dealer.player_list[self.turn % self.dealer.player_count].check)
-                if (self.all_in_trigger > 0 and self.dealer.player_list[0].all_in == True): #only enters if PLAYER attribute all_in is true
-                            #print(self.turn % self.dealer.player_count)
-                            print("entered All in trigger")
-                            arrayVal = (self.turn % self.dealer.player_count)
-                            PlayerNPC.PlayerNPC(self.dealer, arrayVal)
-                            self.all_in_trigger -= 1
-                            
-                            self.pass_turn()
-                            
-                elif (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and #enters if NPC, NPC has not checked
-                    self.dealer.player_list[self.turn % self.dealer.player_count].check == False): #and 
-                    #self.dealer.player_list[self.turn % self.dealer.player_count].all_in != True and 
-                    #self.dealer.player_list[self.turn % self.dealer.player_count].fold != True):
-                    if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #enters if player checked
-                        arrayVal = (self.turn % self.dealer.player_count)
-                        print("entered if player checked")
-                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
-                        #self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
-                        self.pass_turn()
 
-                    else:
-                        #self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count]) #if there is a bet gap, NPC will CALL
-                        print("entered bet_gap")
-                        arrayVal = (self.turn % self.dealer.player_count)
-                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
-                        self.pass_turn()
-                elif (self.dealer.player_list[self.turn % self.dealer.player_count].NPC == True and #enters if NPC, NPC has checked
-                    self.dealer.player_list[self.turn % self.dealer.player_count].check == True):
-                    if self.dealer.player_list[self.turn % self.dealer.player_count].bet_gap == 0: #enters if player checked
-                        arrayVal = (self.turn % self.dealer.player_count)
-                        print("entered if player checked")
-                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
-                        #self.dealer.player_list[self.turn % self.dealer.player_count].check_hand()
-                        self.pass_turn()
+                elif (player.NPC == True and player.check == False):
+                    # random number to decide NPC action
+                    number = random.uniform(0, 1)
+                    bet = 0
 
-                    else:
-                        #self.dealer.player_call(self.dealer.player_list[self.turn % self.dealer.player_count]) #if there is a bet gap, NPC will CALL
-                        print("entered bet_gap")
-                        arrayVal = (self.turn % self.dealer.player_count)
-                        PlayerNPC.PlayerNPC(self.dealer, arrayVal)
+                    # pre-flop decisions
+                    if self.dealer.flop == False:
+                        # checks if npc has a pair
+                        if player.hand[0].rank == player.hand[1].rank:
+                            # has a high pair
+                            if value_dict.get(player.hand[0].rank) >= 11:
+                                
+                                if number < 0.1:
+                                    # selects random number of chips to bet between 20% of chips and 100%
+                                    bet = random.randint(int(player.chips * 0.2), int(player.chips) + player.bet_gap)
+                                    self.dealer.player_bet(player, bet)
+                                elif 0.1 < number < 0.3:
+                                    # selects random number of chips to bet between 5% of chips and 20%
+                                    bet = random.randint(int(player.chips * 0.05), int(player.chips * 0.2)) + player.bet_gap
+                                    if bet > player.chips:
+                                        self.dealer.player_bet(player, player.chips)
+                                    else:
+                                        self.dealer.player_bet(player, bet)
+                                else:
+                                    #checks or calls
+                                    if player.bet_gap == 0:
+                                        player.check_hand()
+                                    else:
+                                        self.dealer.player_call(player)
+                            # has a mid-low pair
+                            else:
+                                if number < 0.2:
+                                    # selects random number of chips to bet between 5% of chips and 20%
+                                    self.dealer.player_bet(player, random.randint(int(player.chips * 0.05), int(player.chips * 0.2)) + player.bet_gap)
+                                else:
+                                    #checks or calls
+                                    if player.bet_gap >= player.chips * 0.2:
+                                        player.fold_hand()
+                                    elif player.bet_gap == 0:
+                                        player.check_hand()
+                                    else:
+                                        self.dealer.player_call(player)
+                        # checks for a high card
+                        elif value_dict.get(player.hand[0].rank) > 11 or value_dict.get(player.hand[1].rank) > 11:
+                            if number < 0.1:
+                                # selects random number of chips to bet between 5% of chips and 20%
+                                self.dealer.player_bet(player, random.randint(int(player.chips * 0.05), int(player.chips * 0.2)) + player.bet_gap)
+                            else:
+                                #checks or calls
+                                if player.bet_gap == 0:
+                                    player.check_hand()
+                                elif number < 0.5:
+                                    self.dealer.player_call(player)
+                                else:
+                                    player.fold_hand
+                        else:
+                            if player.bet_gap == 0:
+                                player.check_hand()
+                            elif player.bet_gap <= int(player.chips) * 0.02:
+                                self.dealer.player_call(player)
+                            else:
+                                player.fold_hand()
+                    # post-flop decisions
+                    elif self.dealer.flop and self.dealer.round_finished == False:
+                        player_cards = []
+                        rank = 9999
+                        for card in player.hand:
+                            player_cards.append(f"{card.rank}{card.suit}")
+                        for card in self.dealer.river:
+                            player_cards.append(f"{card.rank}{card.suit}")
+                        # calculates hand strength to make decisions
+                        if len(player_cards) == 5:
+                            rank = evaluate_cards(player_cards[0], player_cards[1], player_cards[2], player_cards[3],
+                                                        player_cards[4])
+                        elif len(player_cards) == 6:
+                            rank = evaluate_cards(player_cards[0], player_cards[1], player_cards[2], player_cards[3],
+                                                        player_cards[4], player_cards[5])
+                        else:
+                            rank = evaluate_cards(player_cards[0], player_cards[1], player_cards[2], player_cards[3],
+                                                        player_cards[4], player_cards[5], player_cards[6])
+                        if rank < 1500:
+                            # raises if other players have bet less than 20% of current player chips
+                            if player.bet_gap <= player.chips * 0.2:
+                                    self.dealer.player_bet(player, random.randint(int(player.chips * 0.3), int(player.chips * 0.6)))
+                            else:
+                                self.dealer.player_call(player)
+
+                        elif 1500 < rank < 4500:
+                            if player.bet_gap <= player.chips * 0.1 and number < 0.5:
+                                    bet = random.randint(int(player.chips * 0.1), int(player.chips * 0.3)) + player.bet_gap
+                                    if bet > player.chips:
+                                        self.dealer.player_bet(player, player.chips)
+                                    else:
+                                        self.dealer.player_bet(player, random.randint(int(player.chips * 0.11), int(player.chips * 0.3)) + player.bet_gap)
+                            elif player.bet_gap <= player.chips * 0.1:
+                                    self.dealer.player_call(player)
+                            elif player.bet_gap <= player.chips * 0.3 and number < 0.6:
+                                    self.dealer.player_call(player)
+                            else:
+                                player.fold_hand()
+
+                        else:
+                            if (player.bet_gap <= player.chips * 0.2 or player.bet_gap < 50) and number < 0.35:
+                                    self.dealer.player_call(player)
+                            elif player.bet_gap == 0:
+                                player.check_hand()
+                            else:
+                                player.fold_hand()
+                    if(player.check == True):
                         self.pass_turn()
-
-
+                    
         # check if all player cards have been dealt before flop
         if self.dealer.dealt_cards == (self.dealer.player_count * 2) and (self.dealer.flop == False) and self.dealer.players_status(): # checks cards are dealt, flop hasnt happened, and if all player classes have CHECKED
             self.dealer.deal_flop()
@@ -138,8 +208,6 @@ class Poker:
         # finish the round
         if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)) and self.dealer.players_status():
             self.dealer.winners = self.dealer.decide_winner()
-            bet_sum = 0
-            bet_difference = 0
             # reveals cards
             for player in self.dealer.player_list:
                 if player.fold == False:
@@ -147,20 +215,10 @@ class Poker:
                         card.show_card()
             # gather winners
             for winner in self.dealer.winners:
-                bet_sum += self.dealer.player_list[winner].total_bet
                 self.dealer.player_list[winner].toggle_winner()
-            # pays extra amount bet back
-            for player in self.dealer.player_list:
-                for winner in self.dealer.winners:
-                    if player.total_bet > self.dealer.player_list[winner].total_bet:
-                        if bet_difference == 0 or bet_difference > player.total_bet - self.dealer.player_list[winner].total_bet:
-                            bet_difference = player.total_bet - self.dealer.player_list[winner].total_bet
-                self.dealer.pay_winnings(player, bet_difference)
-                bet_difference = 0
             # pays out winners
             for winner in self.dealer.winners:
-                self.dealer.pay_winnings(self.dealer.player_list[winner], int(self.dealer.pot*(self.dealer.player_list[winner].total_bet / bet_sum)))
-                #self.dealer.player_list[winner].add_chips(int(self.dealer.pot*(self.dealer.player_list[winner].total_bet / bet_sum)))
+                self.dealer.pay_winnings(self.dealer.player_list[winner], int(self.dealer.pot/len(self.dealer.winners)))
 
             
 

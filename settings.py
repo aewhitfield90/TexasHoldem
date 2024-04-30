@@ -8,7 +8,8 @@ HEIGHT = 900
 GAME_FONT = "arialblack"
 TEXT_COLOR = (255, 255, 255)
 GAME_AUDIO = ''
-NAME_LIST = ["Andrew", "Felipe", "Jonathan", "Jose", "Parker"]
+NAME_LIST = ["Andrew_AI", "Beatrice_AI", "Chad_AI", "Diana_AI", "Emilia_AI", "Felipe_AI", "Gabrielle_AI", "Hector_AI", "Isabelle_AI", "Jonathan_AI", "Jose_AI",
+             "Karen_AI", "Leonard_AI", "Maria_AI", "Nicholas_AI", "Oscar_AI", "Parker_AI", "Quentin_AI", "Rachel_AI", "Sandra_AI", "Thomas_AI", "Victor_AI"]
 
 # coordinates for cards and player names
 CARDS_1 = [(710,630), (260,450), (70,130), (1340,130), (1140,450)]

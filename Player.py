@@ -84,17 +84,24 @@ class Player:
     def call_hand(self):
         self.has_called = True
         """ Executes a call action, matching the current highest bet by betting the bet gap."""
-        self.bet_raise(self.bet_gap)
+        if self.chips > self.bet_gap:
+            self.bet_raise(self.bet_gap)
+        else:
+            self.bet_raise(self.chips)
 
     def check_hand(self):
         """ Sets the player's status to checked, indicating no betting action this turn."""
         self.check = True
         self.check = True
     
-    # sets check to false
+    # sets check to false and other conditions to have the turn again
     def reverse_check(self):
         if self.check == True:
             self.check = False
+        if self.has_called == True:
+            self.has_called = False
+        self.can_act = False
+        self.last_act_time = 0
     
     def add_chips(self, winnings):
         """
