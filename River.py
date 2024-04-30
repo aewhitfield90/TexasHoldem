@@ -51,6 +51,7 @@ class Dealer:
         self.winners = []
         self.round_finished = False
         self.button = 0 #person located after the blinds and the one who starts the rounds
+        self.game_stage = "Pre-Flop" # Initialize the game stage
 
     def add_player(self, player):
         """ Adds a new player to the game table if the maximum player limit has not been reached."""
@@ -152,6 +153,7 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
         self.flop = True
+        self.game_stage = "Flop" # Changed to Flop
         #for player in self.player_list:
             #print(player.name + " " + f"{player.hand[0].rank}{player.hand[0].suit}" + " " + f"{player.hand[1].rank}{player.hand[1].suit}")
 
@@ -173,6 +175,7 @@ class Dealer:
             new_card.position = (RIVER_X[3], RIVER_Y)
             self.river.append(new_card)
             self.dealt_cards += 1
+            self.game_stage = "Turn" # Changed to Flop
 
     def deal_river(self):
         """Deals the fifth community card (river)."""
@@ -182,13 +185,14 @@ class Dealer:
             self.river.append(new_card)
             self.dealt_cards += 1
             self.can_deal = False
-
+            self.game_stage = "River" # Changed to River
 
     def decide_winner(self):
         """
         Evaluates all players' hands to determine the winner(s) of the round by 
         using the phevaluator library to calculate the hand ranks.
         """
+        self.game_stage = "Showdown" # Changed to Showdown
         for player in self.player_list:
             player_cards = []
             if player.fold == False:
@@ -217,6 +221,9 @@ class Dealer:
     def pay_winnings(self, player, ammount):
         player.add_chips(ammount)
         self.pot -= ammount
+    
+    def get_current_stage(self):
+        return self.game_stage
 
     # function to get table back to starting point so a new round can be started
     def reset_table(self):
@@ -241,3 +248,4 @@ class Dealer:
         self.flop = False
         self.can_deal = True
         self.round_finished = False
+        self.game_stage = "Pre-Flop"
