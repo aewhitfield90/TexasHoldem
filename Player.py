@@ -15,16 +15,15 @@ class Player:
         all_in (bool): Flag indicating whether the player has put all their chips in.
         hand_rank (int): Numerical ranking of the player's hand.
     """
-    def __init__(self, name = "N/A", starting_chips = 0,):
+       
+    def __init__(self, name = "N/A", starting_chips = 0, NPC = False):
         """
         Initializes a new player with the provided name and starting chips.
 
         Parameters:
-            name (str): The name of the player.
-            starting_chips (int): The initial amount of chips the player starts with.
+        name (str): The name of the player.
+        starting_chips (int): The initial amount of chips the player starts with.
         """
-        
-    def __init__(self, name = "N/A", starting_chips = 0, NPC = False):
         self.name = name
         self.chips = starting_chips
         self.bet = 0
@@ -39,6 +38,9 @@ class Player:
         self.has_called = False
         self.hand_rank = 9999
         self.winner = False
+        self.small_blind = False
+        self.big_blind = False
+        self.button = False
         #variables to delay npc actions
         self.can_act = False
         self.last_act_time = 0
@@ -126,6 +128,15 @@ class Player:
     
     def toggle_winner(self):
         self.winner = True
+    
+    def set_small_blind(self):
+        self.small_blind = True
+
+    def set_big_blind(self):
+        self.big_blind = True
+
+    def set_button(self):
+        self.button = True
 
     def reset_turn(self):
         """
@@ -139,6 +150,7 @@ class Player:
         self.last_act_time = 0
         if self.all_in == False and self.fold == False:
             self.check = False
+        
     
     def reset_round(self):
         """
@@ -150,3 +162,6 @@ class Player:
         self.hand_rank = 9999
         self.total_bet = 0
         self.winner = False
+        self.small_blind = False
+        self.big_blind = False
+        self.button = False

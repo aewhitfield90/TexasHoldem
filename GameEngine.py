@@ -43,8 +43,11 @@ class Poker:
         # blinds
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2) and self.blind == False:
             self.dealer.player_bet(self.dealer.player_list[self.start_turn - 2 % self.dealer.player_count], self.dealer.small_blind) #small blind bet
+            self.dealer.player_list[self.start_turn - 2 % self.dealer.player_count].set_small_blind()
             self.dealer.player_bet(self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count], self.dealer.small_blind * 2)#big blind bet
+            self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count].set_big_blind()
             self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count].reverse_check() #reverses check for blind players
+            self.dealer.player_list[self.start_turn].set_button()
             self.blind = True
 
         # NPC player actions
