@@ -5,6 +5,7 @@ from Player import Player
 from Tools import *
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
+from GameLogger import GameLogger
 
 
 ctypes.windll.user32.SetProcessDPIAware()
@@ -49,6 +50,7 @@ class Game:
         self.mouse = pygame.mouse.get_pressed()
         self.textbox_active = False
         self.start_time = pygame.time.get_ticks()
+        self.game_logger = GameLogger()
 
         # Load images and create buttons for the main menu and in-game actions
         self.load_images()
@@ -150,6 +152,15 @@ class Game:
             # high scores
             if self.game_state == "high_scores":
                 draw_text(self.screen, "HIGH SCORES", 72, TEXT_COLOR, 550, 100)
+                # Retrieve top scores from the GameLogger
+                top_players = self.game_logger.get_top_players()
+
+                # Display the top scores on the screen
+                y_offset = 200
+                for rank, (player_name, chips) in enumerate(top_players, start=1):
+                    score_text = f"{rank}. {player_name}: {int(chips)}"
+                    draw_text(self.screen, score_text, 36, TEXT_COLOR, 550, y_offset)
+                    y_offset += 50
                 if self.back_button_1.draw(self.screen):
                     self.game_state = "main_menu"
 
