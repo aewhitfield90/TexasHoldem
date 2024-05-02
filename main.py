@@ -8,6 +8,7 @@ from pygame_widgets.textbox import TextBox
 from GameLogger import GameLogger
 
 
+
 ctypes.windll.user32.SetProcessDPIAware()
 
 
@@ -61,7 +62,6 @@ class Game:
         """
         self.start_time = pygame.time.get_ticks()
         while True:
-            
             textbox_active = False  # Flag to track if TextBox was clicked
 
             events = pygame.event.get()  # Get all pygame events
@@ -265,17 +265,10 @@ class Game:
                                 player_bet_output.setText('')  # Reset TextBox input
                             elif bet_amount < min_bet:
                                 print("Not enough chips!")
-                                player_bet_output.setText('')  # Reset TextBox input
-                            else:
-                                # Process the bet
-                                if bet_amount == poker_game.dealer.player_list[0].chips:
-                                    print("all in changed")
-                                    poker_game.dealer.player_list[0].all_in = True
-                                poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
-                                player_bet_output.setText(str(bet_amount))
-                                if poker_game.dealer.player_list[0].check == True:
-                                    poker_game.pass_turn()
-
+                            poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
+                            player_bet_output.setText(str(bet_amount + 15))
+                            if poker_game.dealer.player_list[0].check == True:
+                                poker_game.pass_turn()
                         except ValueError:
                             print("Invalid bet amount!")
 
@@ -332,15 +325,11 @@ class Game:
                             del player_bet_output
                             del poker_game
                             self.players = []
-                    
-                #back to main menu
-                if self.back_button_2.draw(self.screen):
-                    self.game_state = "main_menu"
-                    del player_bet_output
-                    del poker_game
-                    self.players = []
-                         
-            self.delta_time = (pygame.time.get_ticks() - self.start_time)
+                            
+
+            # Time variables
+            self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
+            self.start_time = pygame.time.get_ticks()
             pygame_widgets.update(events)
             pygame.display.update()
             self.screen.fill(BACKGROUND_COLOR)
