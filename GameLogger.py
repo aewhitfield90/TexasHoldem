@@ -43,16 +43,6 @@ class GameLogger:
         with open(self.file_name, 'w') as file:
             json.dump(self.data, file, indent=4)
 
-    def load_log(self):
-        """
-        Loads game data from the JSON file.
-        """
-        try:
-            with open(self.file_name, 'r') as file:
-                self.data = json.load(file)
-        except FileNotFoundError:
-            self.data = {}
-            
     def get_top_players(self, top_n=5):
         """
         Retrieves the top players based on the chips won.
@@ -63,5 +53,4 @@ class GameLogger:
         Returns:
             list: A sorted list of tuples, where each tuple contains a player's name and their chip count.
         """
-        self.load_log()  # Reload log data before retrieving top players
         return sorted(self.data.items(), key=lambda item: item[1], reverse=True)[:top_n]
