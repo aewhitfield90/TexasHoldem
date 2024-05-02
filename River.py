@@ -20,7 +20,6 @@ class Dealer:
         num_active_players (int): Number of players not folded.
         current_player_index (int): Index of the current player.
         can_deal (bool): Flag to check if dealing can continue.
-        players_check (bool): Flag to check if all players have checked.
         dealt_cards (int): Count of cards dealt to players this round.
         winners (list): Indices of players who have won the round.
         round_finished (bool): Flag to check if the round has concluded.
@@ -46,7 +45,6 @@ class Dealer:
         self.num_active_players = len(self.player_list)
         self.current_player_index = 0
         self.can_deal = True
-        self.players_check = False
         self.dealt_cards = 0
         self.winners = []
         self.round_finished = False
