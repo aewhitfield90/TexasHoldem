@@ -257,9 +257,6 @@ class Game:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-<<<<<<< HEAD
-                            if bet_amount > poker_game.dealer.player_list[0].chips:
-=======
                             min_bet = poker_game.dealer.player_list[0].bet_gap
                             max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
 
@@ -267,7 +264,6 @@ class Game:
                                 print("Bet Too High!")
                                 player_bet_output.setText('')  # Reset TextBox input
                             elif bet_amount < min_bet:
->>>>>>> main
                                 print("Not enough chips!")
                             poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
                             player_bet_output.setText(str(bet_amount + 15))
