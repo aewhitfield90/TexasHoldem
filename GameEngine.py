@@ -53,7 +53,7 @@ class Poker:
             player = self.dealer.player_list[self.turn % self.dealer.player_count]
             if player.last_act_time == 0 and player.NPC == True:
                 player.last_act_time = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - player.last_act_time >= 100 or player.all_in == True or player.fold == True:
+            if pygame.time.get_ticks() - player.last_act_time >= 1500 or player.all_in == True or player.fold == True:
                 if (player.all_in == True or player.fold == True):                  
                     self.pass_turn()
 
