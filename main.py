@@ -131,7 +131,8 @@ class Game:
                 chips_output.disable()
                 blind_output.setText(blind_slider.getValue())
                 blind_output.disable()
-                self.player_name = player_name_output.getText()
+                if player_name_output.getText() != "":
+                    self.player_name = player_name_output.getText()
 
 
                 # saving values when returning to main menu
