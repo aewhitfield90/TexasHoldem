@@ -7,6 +7,7 @@ from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
 
 
+
 ctypes.windll.user32.SetProcessDPIAware()
 
 
@@ -247,7 +248,6 @@ class Game:
                             bet_amount = int(player_bet_output.getText())
                             if bet_amount > poker_game.dealer.player_list[0].chips:
                                 print("Not enough chips!")
-                                return  # Exit early if not enough chips
                             poker_game.dealer.player_bet(poker_game.dealer.player_list[0], bet_amount)
                             player_bet_output.setText(str(bet_amount + 15))
                             if poker_game.dealer.player_list[0].check == True:

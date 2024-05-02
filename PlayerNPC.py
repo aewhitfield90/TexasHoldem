@@ -172,13 +172,14 @@ class PlayerNPC:
             return
 
     def all_in_set_pot(self, dealer, nameInList):
-        if dealer.player_list[0].bet <= dealer.player_list[nameInList].chips: #if player bets all in with lower or equal chip value, NPC does bet raise of that amount
+        if dealer.player_list[0].bet <= dealer.player_list[nameInList].chips:
             dealer.player_list[nameInList].bet_raise(dealer.player_list[0].bet)
-            dealer.pot += dealer.player_list[0].bet
+            dealer.pot += dealer.player_list[nameInList].bet  # Corrected line to add the current player's bet to the pot
         else:
-            dealer.player_list[nameInList].bet_raise(dealer.player_list[nameInList].chips) # if player has larger chip amount than NPC, NPC bets rest of chips it has
+            dealer.player_list[nameInList].bet_raise(dealer.player_list[nameInList].chips)
             dealer.pot += dealer.player_list[nameInList].chips
-                
+
+                    
     def chance_to_raise(self, dealer, nameInList):
         if random.randrange(0,10) == 0: #if cards arent a pair randomly decides to check or raise
             dealer.player_bet(dealer.player_list[nameInList], 50)
