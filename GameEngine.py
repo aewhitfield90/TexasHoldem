@@ -10,21 +10,19 @@ class Poker:
     def __init__(self, players) :
         self.dealer = Dealer(players)
         self.turn = 0
-        self.start_turn = 0
+        self.button = 0
         self.round_finished = False
-        self.all_in_trigger = len(players)
         self.show_main_hand = False
-        self.show_all_hands = False
         self.blind = False
     
     def toggle_blind(self):
         self.blind = False
     
     def increment_button(self):
-        self.start_turn += 1
-        if self.start_turn >= len(self.dealer.player_list):
-            self.start_turn = 0
-        self.turn = self.start_turn
+        self.button += 1
+        if self.button >= len(self.dealer.player_list):
+            self.button = 0
+        self.turn = self.button
 
     def pass_turn(self):
         self.turn += 1
@@ -42,12 +40,12 @@ class Poker:
 
         # blinds
         if self.dealer.dealt_cards >= (self.dealer.player_count * 2) and self.blind == False:
-            self.dealer.player_bet(self.dealer.player_list[self.start_turn - 2 % self.dealer.player_count], self.dealer.small_blind) #small blind bet
-            self.dealer.player_list[self.start_turn - 2 % self.dealer.player_count].set_small_blind()
-            self.dealer.player_bet(self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count], self.dealer.small_blind * 2)#big blind bet
-            self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count].set_big_blind()
-            self.dealer.player_list[self.start_turn - 1 % self.dealer.player_count].reverse_check() #reverses check for blind players
-            self.dealer.player_list[self.start_turn].set_button()
+            self.dealer.player_bet(self.dealer.player_list[self.button - 2 % self.dealer.player_count], self.dealer.small_blind) #small blind bet
+            self.dealer.player_list[self.button - 2 % self.dealer.player_count].set_small_blind()
+            self.dealer.player_bet(self.dealer.player_list[self.button - 1 % self.dealer.player_count], self.dealer.small_blind * 2)#big blind bet
+            self.dealer.player_list[self.button - 1 % self.dealer.player_count].set_big_blind()
+            self.dealer.player_list[self.button - 1 % self.dealer.player_count].reverse_check() #reverses check for blind players
+            self.dealer.player_list[self.button].set_button()
             self.blind = True
 
         # NPC player actions
@@ -178,7 +176,7 @@ class Poker:
             for player in self.dealer.player_list:
                 player.reset_turn()
 
-            self.turn = self.start_turn
+            self.turn = self.button
         
         """Removed in favor of splitting the function into two separate functions
         # deal extra cards to river
@@ -198,7 +196,7 @@ class Poker:
             self.dealer.river[3].show_card()
             for player in self.dealer.player_list:
                 player.reset_turn()
-            self.turn = self.start_turn
+            self.turn = self.button
 
         # Deal the river card
         if len(self.dealer.river) == 4 and self.dealer.players_status():  # Checks if turn has been dealt and all players are ready
@@ -206,7 +204,7 @@ class Poker:
             self.dealer.river[4].show_card()
             for player in self.dealer.player_list:
                 player.reset_turn()    
-            self.turn = self.start_turn
+            self.turn = self.button
 
         # finish the round
         if ((self.dealer.can_deal == False) and (len(self.dealer.winners) < 1)) and self.dealer.players_status():

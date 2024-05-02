@@ -102,6 +102,8 @@ class Player:
             self.check = False
         if self.has_called == True:
             self.has_called = False
+        if self.has_bet == True:
+            self.has_bet = False
         self.can_act = False
         self.last_act_time = 0
     

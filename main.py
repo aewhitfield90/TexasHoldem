@@ -5,6 +5,7 @@ from Player import Player
 from Tools import *
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
+from GameLogger import GameLogger
 
 
 ctypes.windll.user32.SetProcessDPIAware()
@@ -38,7 +39,6 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("POKER GAME")
         self.clock = pygame.time.Clock()
-        self.game_menu = True
         self.player_name = "PLAYER"
         self.game_state = "main_menu"
         self.player_num = 5
@@ -49,6 +49,7 @@ class Game:
         self.mouse = pygame.mouse.get_pressed()
         self.textbox_active = False
         self.start_time = pygame.time.get_ticks()
+        self.game_logger = GameLogger()
 
         # Load images and create buttons for the main menu and in-game actions
         self.load_images()
@@ -150,6 +151,15 @@ class Game:
             # high scores
             if self.game_state == "high_scores":
                 draw_text(self.screen, "HIGH SCORES", 72, TEXT_COLOR, 550, 100)
+                # Retrieve top scores from the GameLogger
+                top_players = self.game_logger.get_top_players()
+
+                # Display the top scores on the screen
+                y_offset = 200
+                for rank, (player_name, chips) in enumerate(top_players, start=1):
+                    score_text = f"{rank}. {player_name}: {int(chips)}"
+                    draw_text(self.screen, score_text, 36, TEXT_COLOR, 550, y_offset)
+                    y_offset += 50
                 if self.back_button_1.draw(self.screen):
                     self.game_state = "main_menu"
 
@@ -167,7 +177,7 @@ class Game:
                         card.render_card(self.screen)
                     # pot
                     draw_text(self.screen, f"POT: {poker_game.dealer.pot}", 28, TEXT_COLOR, 780, 400)
-                    draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.start_turn] - 80, PLAYER_Y[poker_game.start_turn] - 30)
+                    draw_text(self.screen, "Button", 14, (0,0,0), PLAYER_X[poker_game.button] - 80, PLAYER_Y[poker_game.button] - 30)
                     draw_text(self.screen, f"BET: {poker_game.dealer.player_list[i].total_bet}", 20, TEXT_COLOR, PLAYER_X[i], PLAYER_Y[i] + 60)
                     draw_text(self.screen, poker_game.dealer.get_current_stage(), 40, (255,255,10), 20, 650)
                     draw_text(self.screen, "TURN", 18, (255,0,0), PLAYER_X[poker_game.turn % poker_game.dealer.player_count] - 80, PLAYER_Y[poker_game.turn % poker_game.dealer.player_count] - 50)
@@ -246,7 +256,7 @@ class Game:
                     if (poker_game.turn % poker_game.dealer.player_count) == 0 and poker_game.dealer.player_list[0].check == False:
                         try:
                             bet_amount = int(player_bet_output.getText())
-                            min_bet = 1
+                            min_bet = poker_game.dealer.player_list[0].bet_gap
                             max_bet = poker_game.dealer.player_list[0].chips  # Maximum bet is the remaining chips of the player
 
                             if bet_amount > max_bet:
@@ -291,7 +301,7 @@ class Game:
                 
                 if poker_game.dealer.dealt_cards == (len(poker_game.dealer.player_list)*2) + 5 and poker_game.dealer.players_status():
                     # prints deal cards button
-                    if self.deal_button.draw(self.screen):
+                    if self.reset_button.draw(self.screen):
                         # remove npc player if they reach 0 chips
                         players_to_remove =[]
                         for player in poker_game.dealer.player_list:
@@ -349,7 +359,7 @@ class Game:
         self.bet_img = pygame.image.load("menu_buttons/bet_button.png").convert_alpha()
         self.fold_img = pygame.image.load("menu_buttons/fold_button.png").convert_alpha()
         self.back_img_2 = pygame.transform.scale_by(self.back_img, 0.8)
-        self.deal_img = pygame.image.load("menu_buttons/deal_button.png").convert_alpha()
+        self.reset_img = pygame.image.load("menu_buttons/reset_button.png").convert_alpha()
 
     
     
@@ -368,7 +378,7 @@ class Game:
         self.call_button = Button(1220, 840, self.call_img, 1)
         self.bet_button = Button(1345, 840, self.bet_img, 1)
         self.fold_button = Button(1470, 840, self.fold_img, 1)
-        self.deal_button = Button(10, 700, self.deal_img, 1)
+        self.reset_button = Button(10, 700, self.reset_img, 1)
     
 if __name__ == '__main__':
     game = Game()
