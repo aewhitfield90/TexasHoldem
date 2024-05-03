@@ -326,6 +326,12 @@ class Game:
                             del poker_game
                             self.players = []
                             
+                #back to main menu
+                if self.back_button_2.draw(self.screen):
+                    self.game_state = "main_menu"
+                    del player_bet_output
+                    del poker_game
+                    self.players = []                
 
             # Time variables
             self.delta_time = (pygame.time.get_ticks() - self.start_time) / 1000
